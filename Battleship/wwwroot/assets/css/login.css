@@ -1,0 +1,12 @@
+﻿#login-form {
+    width: 40%;
+    margin: 0 auto;
+    margin-top: 2vh;
+}
+
+    #login-form input {
+        width: 80%;
+        margin: 0 auto;
+        margin-top: 1vh;
+    }
+

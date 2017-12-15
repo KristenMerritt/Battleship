@@ -1,0 +1,59 @@
+﻿#challenge-container {
+    height: 25vh;
+    border: 1pt solid #e0e0e0;
+    border-radius: 15px;
+    overflow: scroll;
+}
+
+.challenge {
+    position: relative;
+    min-height: 10vh;
+    width: 100%;
+    border-bottom: 1pt solid #e0e0e0;
+}
+
+.challenge-info {
+    margin-left: 2vw;
+    float: left;
+    min-width: 10vw;
+    line-height: 8vh;
+}
+
+.challenger-name {
+    margin: 0;
+    padding: 3px;
+}
+
+.challenge-accept-button,
+.challenge-decline-button {
+    width: 7vw;
+    height: 4vh;
+    line-height: 4vh;
+    background-color: #5887bc;
+    color: white;
+    float: left;
+    text-align: center;
+    margin-right: 2vw;
+    margin-top: 2.5vh;
+}
+
+.challenge-accept-button:hover,
+.challenge-decline-button:hover {
+    cursor: pointer;
+}
+
+#challenge-request {
+    margin-top: 1vh;
+}
+
+#challenge-request input[type="text"] {
+    width: 75%;
+    float: left;
+}
+
+#challenge-request input[type="submit"] {
+    width: 23%;
+    float: right;
+    background-color: #5887bc;
+    color: white;
+}

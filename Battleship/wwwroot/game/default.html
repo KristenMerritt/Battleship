@@ -1,0 +1,148 @@
+﻿<!-- GAME PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Game Page for Battleship">
+    <meta name="author" content="Kristen Merritt">
+    <title>Battleship</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/css/bootstrap.css" rel="stylesheet">
+    <link href="../assets/css/game.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <link href="../assets/css/default.css" rel="stylesheet" />
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container clearfix">
+            <a class="navbar-brand" href="/">Battleship</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">
+                            Home
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/game">Current Game</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+<div class="container">
+    <input id="gameId" type="hidden" value="" />
+    <input id="currentPlayer-board-id" type="hidden" value="" />
+    <input id="opponent-board-id" type="hidden" value="" />
+    
+    <div id="gameInfoContainer">
+        <div id="playerInfoContainer">
+            <h2 class="currentPlayer-handle">Player Name</h2>
+            <h3> vs </h3>
+            <h2 class="opponent-handle">Competitor</h2>
+        </div>
+        <div id="loading_game">
+            <h1>Loading game...</h1>
+            <img id="spinner" src="../assets/loading_spinner.gif"/>
+        </div>
+    </div>
+
+    <div id="currentPlayer-board-container">
+        <div class="letters">
+            <div class="letter-container"> A </div>
+            <div class="letter-container"> B </div>
+            <div class="letter-container"> C </div>
+            <div class="letter-container"> D </div>
+            <div class="letter-container"> E </div>
+            <div class="letter-container"> F </div>
+            <div class="letter-container"> G </div>
+            <div class="letter-container"> H </div>
+            <div class="letter-container"> I </div>
+            <div class="letter-container"> J </div>
+        </div>
+        <div class="numbers">
+            <div class="number-container"> 1 </div>
+            <div class="number-container"> 2 </div>
+            <div class="number-container"> 3 </div>
+            <div class="number-container"> 4 </div>
+            <div class="number-container"> 5 </div>
+            <div class="number-container"> 6 </div>
+            <div class="number-container"> 7 </div>
+            <div class="number-container"> 8 </div>
+            <div class="number-container"> 9 </div>
+            <div class="number-container"> 10 </div>
+        </div>
+        <div class="boardContainer">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500px" height="550px">
+                <rect x="0px" y="0px" width="100%" height="100%" id="board-1-background" fill="#cecece" stroke="black"></rect>
+                <text class="currentPlayer-handle" x="50px" y="530px"></text>
+                <text class="hit-board-text" x="250px" y="530px">HIT</text>
+                <text class="miss-board-text" x="300px" y="530px">MISS</text>
+            </svg>
+            <button id="place_Ships">Place Ships & Begin</button>
+        </div>
+    </div>
+
+    <div id="opponent-board-container">
+        <div class="letters">
+            <div class="letter-container"> A </div>
+            <div class="letter-container"> B </div>
+            <div class="letter-container"> C </div>
+            <div class="letter-container"> D </div>
+            <div class="letter-container"> E </div>
+            <div class="letter-container"> F </div>
+            <div class="letter-container"> G </div>
+            <div class="letter-container"> H </div>
+            <div class="letter-container"> I </div>
+            <div class="letter-container"> J </div>
+        </div>
+        <div class="numbers">
+            <div class="number-container"> 1 </div>
+            <div class="number-container"> 2 </div>
+            <div class="number-container"> 3 </div>
+            <div class="number-container"> 4 </div>
+            <div class="number-container"> 5 </div>
+            <div class="number-container"> 6 </div>
+            <div class="number-container"> 7 </div>
+            <div class="number-container"> 8 </div>
+            <div class="number-container"> 9 </div>
+            <div class="number-container"> 10 </div>
+        </div>
+        <div class="boardContainer">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500px" height="550px">
+                <rect x="0px" y="0px" width="100%" height="100%" id="board-2-background" fill="#cecece" stroke="black"></rect>
+                <text class="opponent-handle" x="50px" y="530px"></text>
+                <text class="hit-board-text" x="250px" y="530px">HIT</text>
+                <text class="miss-board-text" x="300px" y="530px">MISS</text>
+            </svg>
+        </div>
+    </div>
+</div>    
+
+<!-- Bootstrap core JavaScript -->
+<script src="../assets/jquery/jquery-3.2.1.min.js"></script>
+<script src="../assets/js/popper.min.js"></script>
+<script src="../assets/js/bootstrap.min.js"></script>
+
+<!-- Custom JS for the game -->
+<script src="../assets/js/shared.js"></script>
+<script src="../assets/js/game/Objects/ships.js"></script>
+<script src="../assets/js/game/Objects/basicGameComponents.js"></script>    
+<script src="../assets/js/game/gameFunctions.js"></script>
+<script src="../assets/js/game/initialLoad.js"></script>
+
+
+</body>
+</html>

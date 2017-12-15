@@ -1,0 +1,94 @@
+﻿.container {
+    max-width: 1400px;
+}
+
+#currentPlayer-board-container,
+#opponent-board-container {
+    float: left;
+    max-width: 49%;
+}
+
+
+.letters,
+.numbers {
+    font-size: 20pt;
+}
+
+.letters {
+    height: 50px;
+    width: 600px;
+    margin-left: 50px;
+}
+
+.numbers {
+    height: 575px;
+    width: 50px;
+    float: left;
+}
+
+.letter-container,
+.number-container {
+    text-align: center;
+}
+
+.letter-container {
+    float: left;
+    height: 45px;
+    width: 50px;
+}
+
+.number-container {
+    height: 50px;
+    width: 45px;
+}
+
+.boardContainer {
+    width: 500px;
+}
+
+#gameInfoContainer {
+    position: relative;
+    width: 100%;
+}
+
+.boardContainer {
+    float: left;
+}
+
+#playerInfoContainer {
+    width: 100%;
+}
+
+#playerInfoContainer {
+    text-align: center;
+}
+
+.player-turn {
+    color: red;
+}
+
+#piecesContainer h2,
+#piecesContainer div {
+    text-align: center;
+    margin: 0 auto;
+}
+
+#hit-container,
+#miss-container {
+    width: 100%;
+    height: 5vh;
+    border: 1pt solid yellow;
+}
+
+#hitMissContainer h3,
+#hitMissContainer div {
+    float: left;
+    margin: 5px;
+}
+
+#hit-box,
+#miss-box {
+    border: 1pt solid red;
+    width: 50px;
+    height: 50px;
+}

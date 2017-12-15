@@ -1,0 +1,91 @@
+﻿<!-- HOME / CHAT PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Home Page for Battleship">
+    <meta name="author" content="Kristen Merritt">
+    <title>Battleship</title>
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/chat.css" rel="stylesheet">
+    <link href="assets/css/challenges.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <link href="assets/css/default.css" rel="stylesheet" />
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">Battleship</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">
+                        Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/game">Current Game</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h1 class="mt-5">Battleship - The Game</h1>
+            <p class="lead">Challenge people to a game!</p>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-lg-6">
+            <h2>Chat with Friends!</h2>
+            <div id="chat-container">
+                <!-- Chats go here -->
+            </div>
+            <input id="last-chat-id" type="hidden" value="-1"></input>
+            <form id="chat-form" class="form" action="POST">
+                <label id="chat-handle-label" for="chat-message"><span id="chat-handle">Login to Chat</span>:</label>
+                <input id="chat-message" type="text" placeholder="Type Message Here" name="chat-message" class="form-control"/>
+                <input type="submit" value="Send" class="form-control"/>
+            </form>
+        </div>
+        <div id="" class="col-lg-6">
+            <h2>Challenges</h2>
+            <div id="challenge-container">
+                <!-- Challenges go here -->
+            </div>
+            <input id="last-challenge-id" type="hidden" value="-1"></input>
+            <form id="challenge-request" class="form" action="POST">
+                <input id="challenge-handle" type="text" placeholder="Type Username Here" name="challenge-handle" class="form-control"/>
+                <input type="submit" value="Challenge" class="form-control"/>
+            </form>          
+        </div>
+        <div class="col-lg-6"></div>
+    </div>
+</div>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="assets/jquery/jquery-3.2.1.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/shared.js"></script>
+    <script src="assets/js/chat.js"></script>
+    <script src="assets/js/challenge.js"></script>
+    <script src="assets/js/newGameCreation.js"></script>
+</body>
+</html>

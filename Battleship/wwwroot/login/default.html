@@ -1,0 +1,67 @@
+﻿<!-- LOGIN PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Login Page for Battleship">
+    <meta name="author" content="Kristen Merritt">
+    <title>Battleship</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/css/bootstrap.css" rel="stylesheet">
+    <link href="../assets/css/login.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <link href="../assets/css/default.css" rel="stylesheet" />
+</head>
+<body>
+    
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">Battleship</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">
+                        Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/game">Current Game</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+    <div class="col-lg-12 text-center">
+        <h1 class="mt-5">Login to Battleship</h1>
+    </div>
+    <div class="col-lg-12">
+        <form id="login-form" method="POST" class="form-group">
+            <input type="text" name="handle" placeholder="handle" class="form-control" />
+            <input type="password" name="password" placeholder="password" class="form-control" />
+            <input type="submit" class="form-control" value="Login" />
+        </form>
+    </div>
+    <p id="url" style="display: none;"></p>
+</div>    
+
+<!-- Bootstrap core JavaScript -->
+<script src="../assets/jquery/jquery-3.2.1.min.js"></script>
+<script src="../assets/js/popper.min.js"></script>
+<script src="../assets/js/bootstrap.min.js"></script>
+<script src="../assets/js/shared.js"></script>
+<script src="../assets/js/login.js"></script>
+    
+</body>
+</html>

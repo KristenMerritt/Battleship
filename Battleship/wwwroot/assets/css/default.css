@@ -1,0 +1,25 @@
+﻿body {
+    padding-top: 54px;
+}
+
+#loading_game {
+    width: 100vw;
+    height: 55px;
+}
+
+#loading_game h1 {
+    font-size: 20pt;
+    float: left;
+}
+
+#spinner {
+    width: 50px;
+    height: 50px;
+    float: left;
+}
+
+@media (min-width: 992px) {
+    body {
+        padding-top: 56px;
+    }
+}
