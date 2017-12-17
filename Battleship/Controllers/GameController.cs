@@ -10,13 +10,11 @@ namespace Battleship.Controllers
     {
         private readonly PlayerRepo _playerRepo; // DB repo class
         private readonly GameRepo _gameRepo;
-        private readonly BoardRepo _boardRepo;
 
         public GameController(GameRepo gameRepo, BoardRepo boardRepo, PlayerRepo playerRepo) : base(playerRepo)
         {
             _playerRepo = playerRepo;
             _gameRepo = gameRepo;
-            _boardRepo = boardRepo;
         }
 
         // GET: api/Game/{gameId}/{token}
@@ -129,7 +127,7 @@ namespace Battleship.Controllers
                 Player_1_Id = player1Id,
                 Player_2_Id = player2Id,
                 Complete = false,
-                Turn = -1
+                Turn = player1Id
             };
 
             // Create the new game in the DB without the boards

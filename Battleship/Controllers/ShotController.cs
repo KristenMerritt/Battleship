@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Battleship.Models;
-using Battleship.Repos;
-using Microsoft.AspNetCore.Http;
+﻿using Battleship.Repos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Battleship.Controllers
@@ -41,16 +35,6 @@ namespace Battleship.Controllers
         public JsonResult GetNewShotsForBoard(int shotId, int board1Id, int board2Id)
         {
             return Json(_shotRepo.GetNewShotsForBoard(shotId, board1Id, board2Id));
-        }
-
-        // GET: api/Shot/all-hits-by-board/{boardId}
-        // Gets all hits for a board from the DB
-        // RETURN: JsonResult
-        [HttpGet]
-        [Route("all-hits-by-board/{boardId}")]
-        public JsonResult GetHitsForGame(int boardId)
-        {
-            return Json(_shotRepo.GetAllHitsForBoard(boardId));
         }
     }
 }

@@ -137,6 +137,7 @@ var game = {
     opponentPlayerBoardId: -1,
     lastShot: -1,
     turn: -1,
+    winningBoard: -1,
 
     // Initialize the game
     init: function () {       
@@ -190,6 +191,21 @@ var game = {
         document.getElementsByTagName('svg')[0].addEventListener('mousemove', drag.go, false);
 
         initializeRestartGameButton();
+    },
+    announceWinner: function () {
+        var cookie = getTokenFromCookie();
+        if (cookie !== "" && cookie !== null) {
+            if (validToken(cookie)) {
+                ajax("GET", true, "api/Game/" + gameId + "/" +cookie, null, function(gameData) {
+                    if (gameData.complete == 1) {
+                        if (game.winningBoard == game.currentPlayerBoardId) {
+                            $("#main-container").apend("<h1>Winner: " + $(".currentPlayer-handle").val() + "</h1>");
+                        } else if (game.winningBoard == game.opponentPlayerBoardId) {
+                            $("#main-container").apend("<h1>Winner: " + $(".opponent-handle").val() + "</h1>");
+                        }
+                    }
+                });
+            }           
     }
 };
 

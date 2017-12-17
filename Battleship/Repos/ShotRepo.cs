@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -6,6 +7,7 @@ using System.Linq;
 using Battleship.Config;
 using Battleship.Models;
 using Dapper;
+using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 
 namespace Battleship.Repos
@@ -52,51 +54,105 @@ namespace Battleship.Repos
         // Switches whos turn it is in the DB.
         // PARAM: db_Shot
         // RETURN: bool
-        public bool CreateNewShot(db_Shot shot)
+        public ArrayList CreateNewShot(db_Shot shot)
         {
             try
             {
-                Debug.WriteLine("Board ID: " + shot.Board_Id);
-                Debug.WriteLine("Row: " + shot.Row);
-                Debug.WriteLine("Col: " + shot.Col);
-                Debug.WriteLine("Hit: " + shot.Is_Hit);
-
+                // Insert the new shot into the DB
                 _context.MySqlDb.Query<db_Shot>("INSERT INTO shot (board_id, row, col, is_hit) VALUES (" + shot.Board_Id + ", " + shot.Row + ", " + shot.Col + ", " + shot.Is_Hit + ");",
                     commandType: CommandType.Text);
 
+                // Get the game that we just made a shot in
                 var game = _context.MySqlDb.Query<db_Game>("SELECT * FROM game WHERE player_1_board_id = "+shot.Board_Id+" " +
                                                            "OR player_2_board_id = "+shot.Board_Id+";",
                     commandType: CommandType.Text).FirstOrDefault();
 
+                // Switch the turn in the game
                 var nextTurn = shot.Board_Id == game.Player_1_Board_Id ? game.Player_1_Id : game.Player_2_Id;
 
-                Debug.WriteLine("Setting turn: " + nextTurn);
-
+                // Update the game with the turn
                 _context.MySqlDb.Query<db_Game>("UPDATE game " +
                                                 "SET turn = "+nextTurn+" " +
                                                 "WHERE game_id = "+game.Game_Id+";",
                     commandType: CommandType.Text);
 
-                return true;
+                var win = false;
+
+                // If the shot was a hit, get all of the hits for the board
+                if (shot.Is_Hit == 1)
+                {
+                    var hitsForBoard = GetAllHitsForBoard(shot.Board_Id);
+                    var shipLocationsForBoard = _context.MySqlDb.Query<db_ShipLocation>("SELECT * FROM ship_location WHERE board_id = " + shot.Board_Id + ";",
+                                        commandType: CommandType.Text);
+
+                    if (hitsForBoard.Count() == shipLocationsForBoard.Count())
+                    {
+                        var validWin = false;
+                        var requiredValidHits = shipLocationsForBoard.Count();
+                        var validHits = 0;
+
+                        foreach(var hit in hitsForBoard)
+                        {
+                            var hitRow = hit.Row;
+                            var hitCol = hit.Col;
+
+                            foreach (var shipLocation in shipLocationsForBoard)
+                            {
+                                var shipLocationRow = shipLocation.Row;
+                                var shipLocationCol = shipLocation.Col;
+
+                                if (shipLocationRow == hitRow)
+                                {
+                                    if (shipLocationCol == hitCol)
+                                    {
+                                        validHits++;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (validHits == requiredValidHits)
+                        {
+                            win = true;
+                            _context.MySqlDb.Query<db_ShipLocation>("UPDATE game" +
+                                                                    "SET complete = 1  " +
+                                                                    "WHERE board_id = " + shot.Board_Id + ";",
+                                commandType: CommandType.Text);
+                        }
+                    }
+                }
+
+                var returnVal = new ArrayList();
+                returnVal.Add("Shot made");
+                if (win)
+                {
+                    returnVal.Add("Win");
+                }
+                else
+                {
+                    returnVal.Add("No win");
+                }
+
+                return returnVal;
             }
             catch (MySqlException mysqlex)
             {
                 Debug.WriteLine("MYSQL EXCEPTION IN CreateNewShot");
                 Debug.WriteLine(mysqlex.InnerException);
                 Debug.WriteLine(mysqlex.StackTrace);
-                return false;
+                return null;
             }
             catch (InvalidOperationException ioe)
             {
                 Debug.WriteLine("INVALID OPERATION EXCEPTION IN CreateNewShot");
                 Debug.WriteLine(ioe.InnerException);
-                return false;
+                return null;
             }
             catch (Exception e)
             {
                 Debug.WriteLine("EXCEPTION IN CreateNewShot");
                 Debug.WriteLine(e.InnerException);
-                return false;
+                return null;
             }           
         }
     }

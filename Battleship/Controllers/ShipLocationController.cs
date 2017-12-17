@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Battleship.Models;
+﻿using Battleship.Models;
 using Battleship.Repos;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Battleship.Controllers
@@ -39,22 +34,6 @@ namespace Battleship.Controllers
             return Json(_shipLocationRepo.GetShipLocation(shipId));
         }
 
-        //GET: api/ShipLocation/row/1
-        [HttpGet]
-        [Route("row/{rowNum}")]
-        public JsonResult GetAllShipsInRow(int rowNum)
-        {
-            return Json(_shipLocationRepo.GetAllShipLocationsInRow(rowNum));
-        }
-
-        //GET: api/ShipLocation/col/1
-        [HttpGet]
-        [Route("col/{col}")]
-        public JsonResult GetAllShipsInCol(int colNum)
-        {
-            return Json(_shipLocationRepo.GetAllShipLocationsInCol(colNum));
-        }
-
         //GET: api/ShipLocation/checkHit/1/1
         [HttpPost]
         [Route("checkHit")]
@@ -69,11 +48,31 @@ namespace Battleship.Controllers
                 Is_Hit = (ship != null) ? 1 : 0
             };
 
-            return _shotRepo.CreateNewShot(shot) ? Json(shot) : Json(new
+            var newShotReturn = _shotRepo.CreateNewShot(shot);
+
+            if (!newShotReturn[0].Equals("Shot made"))
+                return Json(new
+                {
+                    errMsg = "Error creating shot, please try again.",
+                    err = "An error creating your shot has occured.",
+                    invalidToken = false
+                });
+
+            if (newShotReturn[1].Equals("Win"))
             {
-                errMsg = "Error creating shot, please try again.",
-                err="An error creating your shot has occured.",
-                invalidToken = false
+                return Json(new
+                {
+                    shotMade = true,
+                    hit = shot.Is_Hit, 
+                    win = true,
+                    winningBoard = shot.Board_Id
+                });
+            }
+
+            return Json(new
+            {
+                shotMade = true,
+                win = false
             });
         }
 

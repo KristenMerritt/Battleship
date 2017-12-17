@@ -178,9 +178,14 @@ Hole.prototype = {
                     if (shotData.err != null) {
                         sendErrorMessage(shotData);
                     } else {
-                        hit = shotData.is_Hit;
+                        hit = shotData.hit;
+                        var win = shotData.win;
                         if (hit) {
                             Hole.prototype.hit(hole);
+                            if (win) {
+                                game.winningBoard = shotData.winningBoard;
+                                game.announceWinner();
+                            }
                         } else {
                             Hole.prototype.miss(hole);
                         }
