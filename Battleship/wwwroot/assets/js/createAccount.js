@@ -28,20 +28,9 @@ $(document).ready(function () {
             DateModified: null
         }
 
-        $.ajax({
-            type: "POST",
-            cache: false,
-            dataType: "json",
-            url: window.location.protocol + "//" + window.location.host + "/api/CreatePlayer",
-            data: newAccount,
-            success: function (data) {
-                console.log("Successfully created a new player");
-                window.location = "/";
-            },
-            error: function (error) {
-                console.log("Error in creating a new player");
-                alert("Error, please try again.");
-            }
+        ajax("POST", false, "api/Player", newAccount, function(data) {
+            console.log("Successfully created a new player");
+            window.location = "/";
         });
     });
 
