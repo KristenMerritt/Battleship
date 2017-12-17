@@ -50,30 +50,40 @@ namespace Battleship.Controllers
 
             var newShotReturn = _shotRepo.CreateNewShot(shot);
 
-            if (!newShotReturn[0].Equals("Shot made"))
-                return Json(new
-                {
-                    errMsg = "Error creating shot, please try again.",
-                    err = "An error creating your shot has occured.",
-                    invalidToken = false
-                });
-
-            if (newShotReturn[1].Equals("Win"))
+            if (newShotReturn != null)
             {
+                if (!newShotReturn[0].Equals("Shot made"))
+                    return Json(new
+                    {
+                        errMsg = "Error creating shot, please try again.",
+                        err = "An error creating your shot has occured.",
+                        invalidToken = false
+                    });
+
+                if (newShotReturn[1].Equals("Win"))
+                {
+                    return Json(new
+                    {
+                        shotMade = true,
+                        hit = shot.Is_Hit,
+                        win = true,
+                        winningBoard = shot.Board_Id
+                    });
+                }
+
                 return Json(new
                 {
                     shotMade = true,
-                    hit = shot.Is_Hit, 
-                    win = true,
-                    winningBoard = shot.Board_Id
+                    win = false
                 });
             }
-
             return Json(new
             {
-                shotMade = true,
-                win = false
+                errMsg = "Error creating shot, please try again.",
+                err = "An error creating your shot has occured.",
+                invalidToken = false
             });
+
         }
 
         //GET: api/ShipLocation/createLocation

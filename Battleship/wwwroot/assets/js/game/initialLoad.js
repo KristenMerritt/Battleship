@@ -55,7 +55,6 @@ function loadCurrentGame(loggedInUserId, p2, cookie) {
         if (gameData.errMsg != null) {
             sendErrorMessage(gameData);
         } else {
-            // Set the hidden gameId input element value
             game.gameId = gameData.game_Id;
             game.turn = gameData.turn;
             game.complete = gameData.complete;

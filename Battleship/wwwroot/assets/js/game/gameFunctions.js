@@ -103,31 +103,31 @@ function getShipLength(shipType) {
 var game = {
     xhtmlns: "http://www.w3.org/1999/xhtml",
     svgns: "http://www.w3.org/2000/svg",
-    BOARDX: 0,              //starting pos of board
+    BOARDX: 0, //starting pos of board
     BOARDY: 0,
-    BOARDWIDTH: 10,         // how many squares across
-    BOARDHEIGHT: 10,        // how many squares down
-    CELLSIZE: 50,           // size of cells
+    BOARDWIDTH: 10, // how many squares across
+    BOARDHEIGHT: 10, // how many squares down
+    CELLSIZE: 50, // size of cells
 
     board1Arr: new Array(), // 2d array [row][col] for the board for player 1
     board2Arr: new Array(), // 2d array [row][col] for the board for player 2
 
-    hole1Arr: new Array(),  // 2d array [row][col] of holes for player 1
-    hole2Arr: new Array(),  // 2d array [row][col] of holes for player 2
+    hole1Arr: new Array(), // 2d array [row][col] of holes for player 1
+    hole2Arr: new Array(), // 2d array [row][col] of holes for player 2
 
     // Only display and store the ships for the logged in player
     // Everything else will be done via shots in the DB
-    cruiser: null,          // The cruiser for the logged in player
-    battleship: null,       // the battleshipe for the logged in player
-    destroyer: null,        // the destroyer for the logged in player
-    submarine: null,        // the submarine for the logged in player
-    carrier: null,          // the carrier for hte logged in player
+    cruiser: null, // The cruiser for the logged in player
+    battleship: null, // the battleshipe for the logged in player
+    destroyer: null, // the destroyer for the logged in player
+    submarine: null, // the submarine for the logged in player
+    carrier: null, // the carrier for hte logged in player
 
-    carrierPieces: new Array(),     // Pieces associated with the carrier
-    battleshipPieces: new Array(),  // pieces associated with the battleship
-    submarinePieces: new Array(),   // pieces associated with the submarine
-    cruiserPieces: new Array(),     // pieces associated with the cruiser
-    destroyerPieces: new Array(),   // pieces associated with the destroyer
+    carrierPieces: new Array(), // Pieces associated with the carrier
+    battleshipPieces: new Array(), // pieces associated with the battleship
+    submarinePieces: new Array(), // pieces associated with the submarine
+    cruiserPieces: new Array(), // pieces associated with the cruiser
+    destroyerPieces: new Array(), // pieces associated with the destroyer
 
     gameId: -1,
     complete: false,
@@ -140,7 +140,7 @@ var game = {
     winningBoard: -1,
 
     // Initialize the game
-    init: function () {       
+    init: function() {
         var svgs = document.getElementsByTagName("svg");
         //game.gameId = $("#gameId").val(); 
 
@@ -162,8 +162,18 @@ var game = {
             game.board1Arr[i] = new Array();
             game.hole1Arr[i] = new Array();
             for (j = 0; j < game.BOARDHEIGHT; j++) {
-                game.board1Arr[i][j] = new Cell(document.getElementById("gId_" + game.gameId + "_p1"), 'cell_' + j + i + '_p1', game.CELLSIZE, j, i);
-                game.hole1Arr[i][j] = new Hole(document.getElementById("gId_" + game.gameId + "_p1"), 'hole_' + j + "|" + i + '_p1', 20, j, i, (j * 50) + 25, (i * 50) + 25);
+                game.board1Arr[i][j] = new Cell(document.getElementById("gId_" + game.gameId + "_p1"),
+                    'cell_' + j + i + '_p1',
+                    game.CELLSIZE,
+                    j,
+                    i);
+                game.hole1Arr[i][j] = new Hole(document.getElementById("gId_" + game.gameId + "_p1"),
+                    'hole_' + j + "|" + i + '_p1',
+                    20,
+                    j,
+                    i,
+                    (j * 50) + 25,
+                    (i * 50) + 25);
             }
         }
 
@@ -172,8 +182,18 @@ var game = {
             game.board2Arr[i] = new Array();
             game.hole2Arr[i] = new Array();
             for (j = 0; j < game.BOARDHEIGHT; j++) {
-                game.board2Arr[i][j] = new Cell(document.getElementById('gId_' + game.gameId + '_p2'), 'cell_' + j + i + '_p2', game.CELLSIZE, j, i);
-                game.hole2Arr[i][j] = new Hole(document.getElementById('gId_' + game.gameId + '_p2'), 'hole_' + j + "|" + i + '_p2', 20, j, i, (j * 50) + 25, (i * 50) + 25);
+                game.board2Arr[i][j] = new Cell(document.getElementById('gId_' + game.gameId + '_p2'),
+                    'cell_' + j + i + '_p2',
+                    game.CELLSIZE,
+                    j,
+                    i);
+                game.hole2Arr[i][j] = new Hole(document.getElementById('gId_' + game.gameId + '_p2'),
+                    'hole_' + j + "|" + i + '_p2',
+                    20,
+                    j,
+                    i,
+                    (j * 50) + 25,
+                    (i * 50) + 25);
             }
         }
 
@@ -192,23 +212,27 @@ var game = {
 
         initializeRestartGameButton();
     },
-    announceWinner: function () {
+    announceWinner: function() {
         var cookie = getTokenFromCookie();
         if (cookie !== "" && cookie !== null) {
             if (validToken(cookie)) {
-                ajax("GET", true, "api/Game/" + gameId + "/" +cookie, null, function(gameData) {
-                    if (gameData.complete == 1) {
-                        if (game.winningBoard == game.currentPlayerBoardId) {
-                            $("#main-container").apend("<h1>Winner: " + $(".currentPlayer-handle").val() + "</h1>");
-                        } else if (game.winningBoard == game.opponentPlayerBoardId) {
-                            $("#main-container").apend("<h1>Winner: " + $(".opponent-handle").val() + "</h1>");
+                ajax("GET",
+                    true,
+                    "api/Game/" + gameId + "/" + cookie,
+                    null,
+                    function(gameData) {
+                        if (gameData.complete == 1) {
+                            if (game.winningBoard == game.currentPlayerBoardId) {
+                                $("#main-container").apend("<h1>Winner: " + $(".currentPlayer-handle").val() + "</h1>");
+                            } else if (game.winningBoard == game.opponentPlayerBoardId) {
+                                $("#main-container").apend("<h1>Winner: " + $(".opponent-handle").val() + "</h1>");
+                            }
                         }
-                    }
-                });
-            }           
+                    });
+            }
+        }
     }
-};
-
+}
 
 
 /*
