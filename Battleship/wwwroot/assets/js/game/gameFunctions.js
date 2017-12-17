@@ -1,102 +1,180 @@
-﻿var game = {
+﻿//////////////////////////////////////////////////////////////////
+//                                                              //
+//  Game Functions Javascript File						        //
+//  Description:  This file contains the scripts required       //
+//  to player the game                                          //
+//                                                              //
+//////////////////////////////////////////////////////////////////
+
+
+var lastShot; // the last shot ID
+var turn;     // the current player's turn
+
+// The game object
+var game = {
     xhtmlns: "http://www.w3.org/1999/xhtml",
     svgns: "http://www.w3.org/2000/svg",
-    BOARDX: 0, //starting pos of board
+    BOARDX: 0,              //starting pos of board
     BOARDY: 0,
-    BOARDWIDTH: 10, // how many squares across
-    BOARDHEIGHT: 10, // how many squares down
-    CELLSIZE: 50, // size of cells
+    BOARDWIDTH: 10,         // how many squares across
+    BOARDHEIGHT: 10,        // how many squares down
+    CELLSIZE: 50,           // size of cells
 
     board1Arr: new Array(), // 2d array [row][col] for the board for player 1
-    board2Arr: new Array(), // 2d array [row][col] for the board for player 1
+    board2Arr: new Array(), // 2d array [row][col] for the board for player 2
 
-    hole1Arr: new Array(), // 2d array [row][col] of holes for player 1
-    hole2Arr: new Array(), // 2d array [row][col] of holes for player 2
+    hole1Arr: new Array(),  // 2d array [row][col] of holes for player 1
+    hole2Arr: new Array(),  // 2d array [row][col] of holes for player 2
 
-    cruiser: null,
-    battleship: null,
-    destroyer: null,
-    submarine: null,
-    carrier: null,
+    // Only display and store the ships for the logged in player
+    // Everything else will be done via shots in the DB
+    cruiser: null,          // The cruiser for the logged in player
+    battleship: null,       // the battleshipe for the logged in player
+    destroyer: null,        // the destroyer for the logged in player
+    submarine: null,        // the submarine for the logged in player
+    carrier: null,          // the carrier for hte logged in player
 
-    carrierPieces: new Array(),
-    battleshipPieces: new Array(),
-    submarinePieces: new Array(),
-    cruiserPieces: new Array(),
-    destroyerPieces: new Array(),
+    carrierPieces: new Array(),     // Pieces associated with the carrier
+    battleshipPieces: new Array(),  // pieces associated with the battleship
+    submarinePieces: new Array(),   // pieces associated with the submarine
+    cruiserPieces: new Array(),     // pieces associated with the cruiser
+    destroyerPieces: new Array(),   // pieces associated with the destroyer
+    gameId: -1,
 
-    init: function() {
-        var times = 1;
+    // Initialize the game
+    init: function () {       
         var svgs = document.getElementsByTagName("svg");
-        var gameId = $("#gameId").val();
+        game.gameId = $("#gameId").val(); 
 
-        //create a parent to stick board in...
+        // Create boards for the logged in player and the opponent
+        var times = 1;
         while (times < 3) {
-            console.log(times);
             var gEle = document.createElementNS(game.svgns, 'g');
             gEle.setAttributeNS(null, 'transform', 'translate(' + game.BOARDX + ',' + game.BOARDY + ')');
             gEle.setAttributeNS(null, 'id', 'gId_' + gameId + '_p' + times);
             gEle.setAttributeNS(null, 'fill', '#b0b8c4');
 
-            //stick g on board
+            // Stick g on board
             svgs[times - 1].insertBefore(gEle, svgs[times - 1].childNodes[5]);
             times += 1;
         }
 
-        //create the board...
-        //var x = new Cell(document.getElementById('someIDsetByTheServer'),'cell_00',CELLSIZE,0,0);       
+        // Create the cells and holes on the logged in player's board
         for (var i = 0; i < game.BOARDWIDTH; i++) {
             game.board1Arr[i] = new Array();
             game.hole1Arr[i] = new Array();
             for (j = 0; j < game.BOARDHEIGHT; j++) {
-                game.board1Arr[i][j] = new Cell(document.getElementById("gId_" + gameId + "_p1"),
-                    'cell_' + j + i + '_p1',
-                    game.CELLSIZE,
-                    j,
-                    i);
-                game.hole1Arr[i][j] = new Hole(document.getElementById("gId_" + gameId + "_p1"),
-                    'hole_' + j + i + '_p1',
-                    20,
-                    j,
-                    i,
-                    (j * 50) + 25,
-                    (i * 50) + 25);
+                game.board1Arr[i][j] = new Cell(document.getElementById("gId_" + gameId + "_p1"), 'cell_' + j + i + '_p1', game.CELLSIZE, j, i);
+                game.hole1Arr[i][j] = new Hole(document.getElementById("gId_" + gameId + "_p1"), 'hole_' + j + "|" + i + '_p1', 20, j, i, (j * 50) + 25, (i * 50) + 25);
             }
         }
 
+        // Create the cells and holes on the opponent's board
         for (var i = 0; i < game.BOARDWIDTH; i++) {
             game.board2Arr[i] = new Array();
             game.hole2Arr[i] = new Array();
             for (j = 0; j < game.BOARDHEIGHT; j++) {
-                game.board2Arr[i][j] = new Cell(document.getElementById('gId_' + gameId + '_p2'),
-                    'cell_' + j + i + '_p2',
-                    game.CELLSIZE,
-                    j,
-                    i);
-                game.hole2Arr[i][j] = new Hole(document.getElementById('gId_' + gameId + '_p2'),
-                    'hole_' + j + i + '_p2',
-                    20,
-                    j,
-                    i,
-                    (j * 50) + 25,
-                    (i * 50) + 25);
+                game.board2Arr[i][j] = new Cell(document.getElementById('gId_' + gameId + '_p2'), 'cell_' + j + i + '_p2', game.CELLSIZE, j, i);
+                game.hole2Arr[i][j] = new Hole(document.getElementById('gId_' + gameId + '_p2'), 'hole_' + j + "|" + i + '_p2', 20, j, i, (j * 50) + 25, (i * 50) + 25);
             }
         }
 
+        // Load in the ships for the logged in player
         loadShips();
+
+        // Load in the shots for both players
         loadShotsData("currentPlayer");
         loadShotsData("opponent");
 
-        //put the drop code on the document...
-        //document.getElementsByTagName('svg')[0].addEventListener('mouseup', drag.releaseMove, false);
+        // Put the drop code on the document...
+        document.getElementsByTagName('svg')[0].addEventListener('mouseup', drag.releaseMove, false);
 
-        //put the go() method on the svg doc.
-        //document.getElementsByTagName('svg')[0].addEventListener('mousemove', drag.go, false);
+        // Put the go() method on the svg doc.
+        document.getElementsByTagName('svg')[0].addEventListener('mousemove', drag.go, false);
 
-        //put the player in the text
-        //document.getElementById('youPlayer').firstChild.data += player;
-        //document.getElementById('opponentPlayer').firstChild.data += player2;
+        // Begin checking for whose turn it is every 2 seconds
+        window.setInterval(function () {
+            checkForTurn();
+        }, 1000);
+
+        // Begin checking for shots every 1.5 seconds
+        window.setInterval(function () {
+            checkForShots();
+        }, 1500);
     }
+};
+
+/*
+ * Checks the DB for the player turn.
+ */
+function checkForTurn() {
+    console.log("Checking turn...");
+    var cookie = getTokenFromCookie();
+    $.ajax({
+        type: "GET",
+        cache: false,
+        async: true,
+        dataType: "json",
+        url: window.location.protocol + "//" + window.location.host + "/api/Game/" + game.gameId + "/" + cookie,
+        success: function (gameData) {
+            if (gameData.errMsg != null) {
+                sendErrorMessage(gameData);
+            } else {
+                if (gameData.turn == loggedInUserId) {
+                    $(".opponent-handle").removeClass("player-turn");
+                    $(".currentPlayer-handle").addClass("player-turn");           
+                } else {
+                    $(".currentPlayer-handle").removeClass("player-turn");
+                    $(".opponent-handle").addClass("player-turn");
+                }
+            }
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+};
+
+function checkForShots() {
+    console.log("Checking for new shots...");
+    $.ajax({
+        type: "GET",
+        cache: false,
+        async: true,
+        dataType: "json",
+        url: window.location.protocol + "//" + window.location.host + "/api/Shot/new-shots/" + lastShot + "/" + $("#currentPlayer-board-id").val() + "/" + $("#opponent-board-id").val(),
+        success: function (shotData) {
+            if (shotData.length > 0) {
+                console.log("New Shot data: " + shotData);
+                for (var x = 0; x < shotData.length; x++) {
+                    var shot = shotData[x];
+                    var boardId = shot.board_Id;
+                    var hole;
+
+                    if (boardId == $("#currentPlayer-board-id").val()) {
+                        hole = document.getElementById("hole_" + shot.row + "|" + shot.col + "_p1");
+                    } else {
+                        hole = document.getElementById("hole_" + shot.row + "|" + shot.col + "_p2");
+                    }
+
+                    if (shot.is_Hit) {
+                        hole.setAttributeNS(null, 'occupied', 'hit');
+                        hole.setAttributeNS(null, 'class', 'hole_hit');
+                        hole.setAttributeNS(null, 'fill', 'red');
+                    } else {
+                        hole.setAttributeNS(null, 'occupied', 'miss');
+                        hole.setAttributeNS(null, 'class', 'hole_miss');
+                        hole.setAttributeNS(null, 'fill', 'white');
+                    }
+
+                    lastShot = shot.shot_Id;
+                }
+            }
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
 };
 
 function loadShips() {
@@ -193,7 +271,7 @@ function loadShipPieces() {
 
                         case "Battleship":
                             game.battleshipPieces[battleshipCount] = new ShipPiece(document.getElementById("g_Battleship"), row, col, battleshipCount);
-                            carrierCount++;
+                            battleshipCount++;
                             break;
 
                         case "Submarine":
@@ -278,18 +356,24 @@ function getShipType(shipId) {
 
 function loadShotsData(player) {
     console.log("Loading shots for: " + player);
+    var board;
+    if (player == "opponent") {
+        board = "p2";
+    } else {
+        board = "p1";
+    }
     $.ajax({
         type: "GET",
         cache: false,
         async: true,
         dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Shot/all-by-board/" + $("#player-"+player+"-board-id").val(),
+        url: window.location.protocol + "//" + window.location.host + "/api/Shot/all-by-board/" + $("#"+player+"-board-id").val(),
         success: function (shotData) {
             if (shotData.length > 0) {
                 console.log("Shot data: " + shotData);
                 for (var x = 0; x < shotData.length; x++) {
                     var shot = shotData[x];
-                    var hole = document.getElementById("hole_" + player + "_" + shot.row + shot.col);
+                    var hole = document.getElementById("hole_" + shot.row + "|" + shot.col + "_" + board);
 
                     if (shot.is_Hit) {
                         hole.setAttributeNS(null, 'occupied', 'hit');
@@ -300,6 +384,8 @@ function loadShotsData(player) {
                         hole.setAttributeNS(null, 'class', 'hole_miss');
                         hole.setAttributeNS(null, 'fill', 'white');
                     }
+
+                    lastShot = shot.shot_Id;
                 }
             }
         },
@@ -309,31 +395,75 @@ function loadShotsData(player) {
     });
 };
 
-
-
-
-
-
-
-
 ///////////////////////Dragging code/////////////////////////
 var drag = {
     //the problem of dragging....
-    myX: '',						//hold my last pos.
-    myY: '',					//hold my last pos.
-    mover: '',					//hold the id of the thing I'm moving
-    ////setMove/////
-    //	set the id of the thing I'm moving...
-    ////////////////
-    setMove: function (which) {
-        drag.mover = which;
-        //get the last position of the thing... (NOW through the transform=translate(x,y))
-        xy = util.getTransform(which);
+    ship: null,                 //hold the g element I'm moving
+    shipId: '',
+    shipX: '',					//hold the position of the last position the first ShipPiece was in.
+    shipY: '',					//hold the position of the last position the first ShipPiece was in.
+    shipLength: '',
+    shipPiecesCount: '',
+    g: null,
 
-        drag.myX = xy[0];
-        drag.myY = xy[1];
+    //  set the id of the thing I'm moving...
+    setMove: function (type) {
+        switch(type) {
+            case "Carrier":
+                console.log("Carrier selected for drag.");
+                drag.ship = document.getElementById("g_Carrier");
+                drag.shipId = "g_Carrier";
+                drag.g = game.carrier;
+                break;
+
+            case "Battleship":
+                console.log("Battleship selected for drag.");
+                drag.ship = document.getElementById("g_Battleship");
+                drag.shipId = "g_Battleship";
+                drag.g = game.battleship;
+                break;
+
+            case "Submarine":
+                console.log("Submarine selected for drag.");
+                drag.ship = document.getElementById("g_Submarine");
+                drag.shipId = "g_Submarine";
+                drag.g = game.submarine;
+                break;
+
+            case "Cruiser":
+                console.log("Cruiser selected for drag.");
+                drag.ship = document.getElementById("g_Cruiser");
+                drag.shipId = "g_Cruiser";
+                drag.g = game.cruiser;
+                break;
+
+            case "Destroyer":
+                console.log("Destroyer selected for drag.");
+                drag.ship = document.getElementById("g_Destroyer");
+                drag.shipId = "g_Destroyer";
+                drag.g = game.destroyer;
+                break;
+        }
+
+        console.log("Drag variables:");
+        console.log("Drag ship: " + drag.ship);
+        console.log("Drag shipId: " + drag.shipId);
+        console.log("Drag g: " + drag.g);
+
+        //get the last position of the thing... (NOW through the transform=translate(x,y))
+        xy = util.getTransform(drag.shipId);
+        drag.shipX = xy[0];
+        drag.shipY = xy[1];
+        drag.shipLength = drag.ship.getAttribute("width");
+        drag.shipPiecesCount = drag.shipLength / 50;
+
+        console.log("Drag shipX: " + drag.shipX);
+        console.log("Drag shipY: " + drag.shipY);
+        console.log("Drag shipLength: " + drag.shipLength);
+        console.log("Drag shipPiecesCount: " + drag.shipPiecesCount);
+
         //get the object then re-append it to the document so it is on top!
-        util.getPiece(which).putOnTop(which);
+        drag.g.putOnTop();
     },
 
     ////releaseMove/////
@@ -342,20 +472,21 @@ var drag = {
     releaseMove: function (evt) {
         if (drag.mover != '') {
             //is it YOUR turn?
-            if (turn == playerId) {
-                var hit = drag.checkHit(evt.layerX, evt.layerY, drag.mover);
-            } else {
-                var hit = false;
-                util.nytwarning();
-            }
-            if (hit == true) {
-                //I'm on the square...
-                //send the move to the server!!!
-            } else {
-                //move back
-                util.setTransform(drag.mover, drag.myX, drag.myY)
-            }
-            drag.mover = '';
+            //if (turn == playerId) {
+            //    var hit = drag.checkHit(evt.layerX, evt.layerY, drag.mover);
+            //} else {
+            //    var hit = false;
+            //    util.nytwarning();
+            //}
+            //if (hit == true) {
+            //    //I'm on the square...
+            //    //send the move to the server!!!
+            //} else {
+            //    //move back
+            //    util.setTransform(drag.mover, drag.myX, drag.myY)
+            //}
+            drag.ship = null;
+            drag.g = null;
         }
     },
 
@@ -363,8 +494,8 @@ var drag = {
     //	move the thing I'm moving...
     ////////////////
     go: function (evt) {
-        if (drag.mover != '') {
-            util.setTransform(drag.mover, evt.layerX, evt.layerY);
+        if (drag.ship != null) {
+            util.setTransform(drag.shipId, evt.layerX, evt.layerY);
         }
     },
 

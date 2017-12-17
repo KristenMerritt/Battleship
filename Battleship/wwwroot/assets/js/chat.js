@@ -73,7 +73,7 @@ function initializeSendMessageEvent() {
  * For each chat, calls insertNewChat();
  */
 function getAllChat() {
-    //console.log("Getting all chat...");
+    console.log("Getting all chat...");
     $.ajax({
         type: "GET",
         cache: false,

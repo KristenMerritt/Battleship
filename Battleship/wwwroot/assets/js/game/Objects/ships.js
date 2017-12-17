@@ -1,10 +1,16 @@
-﻿//////////////////////////////////////////////////////
-// Class: Ship  								    //
-// Description:  This will create a ship object     // 
-// that you can reference from the game.        	//
-// Arguments:										//
-//      parent - the svg g element (group)          //
-//////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////
+// Class: Ship  								            //
+// Description:  This will create a ship object             // 
+// that you can reference from the game.        	        //
+// Arguments:										        //
+//      parent     - the svg g element (group)              //
+//      type       - the type of ship it is                 //
+//      shipPieces - the pieces associated with the ship    //
+//      isPlaced   - determines whether or not the ship     //
+//                      has been placed yet or not          //
+//      isSunk     - determines whether or not the ship     //
+//                      has sunk or not                     //
+//////////////////////////////////////////////////////////////
 
 // ShipPiece constructor
 function Ship(parent, type, shipPieces, isPlaced, isSunk) {
@@ -19,12 +25,9 @@ function Ship(parent, type, shipPieces, isPlaced, isSunk) {
     this.shipPieces = shipPieces;
 
     // Create the object
-    this.object = new window[type](this);	// based on the piece type, you need to create the more specific piece object (Checker, Pawn, Rook, etc.)
-    this.g = this.object.g;			// a shortcut to the actual svg piece object
-    this.setAtt("id", this.id);				// make sure the SVG object has the correct id value (make sure it can be dragged)
-
-    //this.piece.addEventListener('mousedown', function () { drag.setMove(this.id); }, false);	// add a mousedown event listener to your piece so that it can be dragged.
-    //this.piece.addEventListener('mousedown', function () { document.getElementById('test_output').firstChild.nodeValue = this.id; }, false); 	//for testing purposes only...
+    this.object = new window[type](this);	// Carrier, Cruiser, Battleship, Destroyer, Submarine
+    this.g = this.object.g;			        // a shortcut to the actual svg g object
+    this.setAtt("id", this.id);				
 
     document.getElementsByTagName('svg')[0].appendChild(this.g);
 
@@ -34,16 +37,16 @@ function Ship(parent, type, shipPieces, isPlaced, isSunk) {
 
 Ship.prototype = {
     //change cell (used to move the piece to a new cell and clear the old)
-    changeLocation: function (startRow, stopRow, startCol, stopCol) {
-        //this.current_cell.notOccupied();
-        //document.getElementById('test_output').firstChild.nodeValue = 'dropped cell: ' + newCell;
-        //this.current_cell = game.boardArr[row][col];
-        //this.current_cell.isOccupied(this.id);
+    changeLocation: function () {
+        this.firstPiece = this.shipPieces[0];
+        this.lastPiece = this.shipPieces[length];
+        this.g.setAttributeNS(null, "transform", "translate(" + this.firstPiece.row + "," + this.firstPiece.col + ")");
     },
     //when called, will remove the piece from the document and then re-append it (put it on top!)
     putOnTop: function () {
-        document.getElementsByTagName('svg')[0].removeChild(this.piece);
-        document.getElementsByTagName('svg')[0].appendChild(this.piece);
+        console.log("Putting on top");
+        document.getElementsByTagName('svg')[0].removeChild(this.g);
+        document.getElementsByTagName('svg')[0].appendChild(this.g);
     },
     //will record that I'm now hit
     initialPlace: function () {
@@ -52,7 +55,7 @@ Ship.prototype = {
         this.g.setAttributeNS(null, "transform", "translate(" + this.firstPiece.row + "," + this.firstPiece.col + ")");
     },
     sink: function (id) {
-
+        this.g.setAttributeNS(null, "fill", "red");
     },
     // function that allows a quick setting of an attribute of the specific piece object
     setAtt: function (att, val) {
@@ -62,10 +65,10 @@ Ship.prototype = {
 
 
 function Carrier(parent) {
-    this.parent = parent;		//I can now inherit from Piece class // each ShipPiece should know its parent ship object
-    this.g = document.createElementNS(game.svgns, "g");	// each ShipPiece should have an SVG group to store its svg shipPiece in
+    this.parent = parent;		                        // the board
+    this.g = document.createElementNS(game.svgns, "g");	// Each ship is just a g element
 
-    this.shipPieces = this.parent.shipPieces;
+    this.shipPieces = this.parent.shipPieces;           // all of the ShipPieces associated with the ship
     this.length = 5;
     this.firstPiece = this.shipPieces[0];
     this.lastPiece = this.shipPieces[length];
@@ -82,8 +85,8 @@ function Carrier(parent) {
 }
 
 function Battleship(parent) {
-    this.parent = parent;		//I can now inherit from Piece class // each ShipPiece should know its parent ship object
-    this.g = document.createElementNS(game.svgns, "g");	// each ShipPiece should have an SVG group to store its svg shipPiece in
+    this.parent = parent;		
+    this.g = document.createElementNS(game.svgns, "g");	
 
     this.shipPieces = this.parent.shipPieces;
     this.length = 4;
@@ -102,8 +105,8 @@ function Battleship(parent) {
 }
 
 function Submarine(parent) {
-    this.parent = parent;		//I can now inherit from Piece class // each ShipPiece should know its parent ship object
-    this.g = document.createElementNS(game.svgns, "g");	// each ShipPiece should have an SVG group to store its svg shipPiece in
+    this.parent = parent;		
+    this.g = document.createElementNS(game.svgns, "g");	
 
     this.shipPieces = this.parent.shipPieces;
     this.length = 3;
@@ -122,8 +125,8 @@ function Submarine(parent) {
 }
 
 function Cruiser(parent) {
-    this.parent = parent;		//I can now inherit from Piece class // each ShipPiece should know its parent ship object
-    this.g = document.createElementNS(game.svgns, "g");	// each ShipPiece should have an SVG group to store its svg shipPiece in
+    this.parent = parent;		
+    this.g = document.createElementNS(game.svgns, "g");
 
     this.shipPieces = this.parent.shipPieces;
     this.length = 3;
@@ -142,8 +145,8 @@ function Cruiser(parent) {
 }
 
 function Destroyer(parent) {
-    this.parent = parent;		//I can now inherit from Piece class // each ShipPiece should know its parent ship object
-    this.g = document.createElementNS(game.svgns, "g");	// each ShipPiece should have an SVG group to store its svg shipPiece in
+    this.parent = parent;		
+    this.g = document.createElementNS(game.svgns, "g");
 
     this.shipPieces = this.parent.shipPieces;
     this.length = 2;

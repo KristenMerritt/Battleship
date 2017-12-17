@@ -37,8 +37,7 @@ function Cell(parent, id, size, row, col) {
 //////////////////////////////////////////////////////
 // Cell : Methods									//
 // Description:  All of the methods for the			// 
-// Cell Class (remember WHY we want these to be		//
-// seperate from the object constructor!)			//
+// Cell Class                               		//
 //////////////////////////////////////////////////////
 Cell.prototype = {
     create: function () {
@@ -78,11 +77,10 @@ Cell.prototype = {
 
 //////////////////////////////////////////////////////
 // Class: Hole										//
-// Description:  This will create a hole object		// 
-// (circle on top of a Ship or cell) that you can   //
-// reference from the game. 						//
+// Description:  This will create a hole object     //
+// that represents all of the shots made            //
 // Arguments:										//
-//      parent - the Ship or Cell svg element       //
+//      parent - the board                          //
 //		id     - the holes's id                     //
 //		size   - the object's width & height	    //
 //		row    - the row it is located on           //
@@ -116,8 +114,7 @@ function Hole(parent, id, size, row, col, cx, cy) {
 //////////////////////////////////////////////////////
 // Hole : Methods									//
 // Description:  All of the methods for the			// 
-// Hole Class (remember WHY we want these to be		//
-// seperate from the object constructor!)			//
+// Hole Class                               		//
 //////////////////////////////////////////////////////
 Hole.prototype = {
     create: function () {
@@ -161,40 +158,52 @@ Hole.prototype = {
         var err = false;
 
         //alert("Hole: " + hole.id + " Row: " + holeRow + " Col: " + holeCol);
+        var split = hole.id.split("_");
+        console.log(split);
+        var playerBoard = split[2];
 
-        // Create a ShipLocation object with the data
-        var shipLocation = {  
-            Ship_Location_Id: -1,
-            Ship_Id: -1,
-            Board_Id: $("#player-1-board-id").val(), // change later
-            Row: holeRow,
-            Col: holeCol
-        };
+        if ($(".currentPlayer-handle").hasClass("player-turn")) {
+            if (playerBoard == "p2") {
+                // Create a ShipLocation object with the data
+                var shipLocation = {
+                    Ship_Location_Id: -1,
+                    Ship_Id: -1,
+                    Board_Id: $("#opponent-board-id").val(), // change later
+                    Row: holeRow,
+                    Col: holeCol
+                };
 
-        // Send the ShipLoation daa to make a shot at the location in the DB
-        $.ajax({
-            type: "POST",
-            cache: false,
-            async: false,
-            dataType: "json",
-            url: window.location.protocol + "//" + window.location.host + "/api/ShipLocation/checkHit",
-            data: shipLocation,
-            success: function (shotData) {
-                if (shotData.err != null) {
-                    sendErrorMessage(shotData);
-                } else {
-                    hit = shotData.is_Hit;
-                    if (hit) {
-                        Hole.prototype.hit(hole);
-                    } else {
-                        Hole.prototype.miss(hole);
+                // Send the ShipLoation daa to make a shot at the location in the DB
+                $.ajax({
+                    type: "POST",
+                    cache: false,
+                    async: false,
+                    dataType: "json",
+                    url: window.location.protocol + "//" + window.location.host + "/api/ShipLocation/checkHit",
+                    data: shipLocation,
+                    success: function(shotData) {
+                        if (shotData.err != null) {
+                            sendErrorMessage(shotData);
+                        } else {
+                            hit = shotData.is_Hit;
+                            if (hit) {
+                                Hole.prototype.hit(hole);
+                            } else {
+                                Hole.prototype.miss(hole);
+                            }
+                        }
+                    },
+                    error: function(error) {
+                        console.log(error);
                     }
-                }              
-            },
-            error: function (error) {
-                console.log(error);
+                });
+            } else {
+                alert("Wrong board.");
             }
-        });               
+        } else {
+            alert("Not your turn.");
+        }
+                            
     },
     miss: function(hole) {
         console.log("Shot miss");
@@ -216,7 +225,7 @@ Hole.prototype = {
 //////////////////////////////////////////////////////
 // Class: ShipPiece								    //
 // Description:  This will create a piece object    // 
-// that you can reference from the game. Each ship	//
+// that you can reference from the game.          	//
 // Arguments:										//
 //      parent - the svg g element (group)          //
 //		id     - the cell's id                      //
@@ -244,8 +253,9 @@ function ShipPiece(parent, row, col, num) {
     this.piece.setAttributeNS(null, 'width', '50px');
     this.piece.setAttributeNS(null, 'fill', 'white');
 
-    //this.piece.addEventListener('mousedown', function () { drag.setMove(this.id); }, false);	// add a mousedown event listener to your piece so that it can be dragged.
-    //this.piece.addEventListener('mousedown', function () { document.getElementById('test_output').firstChild.nodeValue = this.id; }, false); 	//for testing purposes only...
+    this.piece.addEventListener('mousedown', function () {
+        drag.setMove(this.parentElement.getAttribute("type"));
+    }, false);	// add a mousedown event listener to your piece so that it can be dragged.
 
     document.getElementById('g_' + this.parentType).appendChild(this.piece);
 

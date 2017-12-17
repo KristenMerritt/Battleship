@@ -55,6 +55,9 @@ namespace Battleship.Repos
         {
             try
             {
+                Debug.WriteLine(player1Id);
+                Debug.WriteLine(player2Id);
+
                 return _context.MySqlDb.Query<db_Game>("SELECT * FROM game " +
                                                        "WHERE ((player_1_id = "+player1Id+" AND player_2_id = "+player2Id+") " +
                                                                 "OR (player_1_id = "+player2Id+" AND player_2_id = "+player1Id+")) " +

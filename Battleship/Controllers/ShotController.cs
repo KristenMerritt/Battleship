@@ -32,6 +32,17 @@ namespace Battleship.Controllers
             return Json(_shotRepo.GetAllShotsForBoard(boardId));
         }
 
+        // GET: api/Shot/new-shot/{shotId}/{boardId}
+        // Gets all shots greater than the shot ID for a 
+        // specific board.
+        // RETURN: JsonResult
+        [HttpGet]
+        [Route("new-shots/{shotId}/{board1Id}/{board2Id}")]
+        public JsonResult GetNewShotsForBoard(int shotId, int board1Id, int board2Id)
+        {
+            return Json(_shotRepo.GetNewShotsForBoard(shotId, board1Id, board2Id));
+        }
+
         // GET: api/Shot/all-hits-by-board/{boardId}
         // Gets all hits for a board from the DB
         // RETURN: JsonResult
@@ -40,16 +51,6 @@ namespace Battleship.Controllers
         public JsonResult GetHitsForGame(int boardId)
         {
             return Json(_shotRepo.GetAllHitsForBoard(boardId));
-        }
-
-        // GET: api/Shot/all-hits-by-board/{boardId}
-        // Gets all hits for a board from the DB
-        // RETURN: JsonResult
-        [HttpPost]
-        [Route("all-hits-by-board/{boardId}")]
-        public bool CreateShot(db_Shot shot)
-        {
-            return _shotRepo.CreateNewShot(shot);
         }
     }
 }
