@@ -69,7 +69,12 @@ namespace Battleship.Controllers
                 Is_Hit = (ship != null) ? 1 : 0
             };
 
-            return _shotRepo.CreateNewShot(shot) ? Json(shot) : Json(new {err="An error creating your shot has occured."});
+            return _shotRepo.CreateNewShot(shot) ? Json(shot) : Json(new
+            {
+                errMsg = "Error creating shot, please try again.",
+                err="An error creating your shot has occured.",
+                invalidToken = false
+            });
         }
 
         //GET: api/ShipLocation/createLocation

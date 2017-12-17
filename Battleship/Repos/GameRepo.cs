@@ -127,19 +127,8 @@ namespace Battleship.Repos
                     Debug.WriteLine("Turn: " + gameInfo.Turn);
 
                     // Retrieve the game created
-                    var gameCreated = _context.MySqlDb.Query<db_Game>("SELECT * FROM game " +
-                                                                      "WHERE player_1_id = "+gameInfo.Player_1_Id+" " +
-                                                                      "AND player_2_id = "+gameInfo.Player_2_Id+" " +
-                                                                      "AND complete = "+gameInfo.Complete+" " +
-                                                                      "AND turn = "+gameInfo.Turn+";",
-                        commandType: CommandType.Text).FirstOrDefault();
-
-                    Debug.WriteLine("Selected the new game with the following data:");
-                    Debug.WriteLine("Game Id: " + gameCreated.Game_Id);
-                    Debug.WriteLine("Player 1: " + gameCreated.Player_1_Id);
-                    Debug.WriteLine("Player 2: " + gameCreated.Player_2_Id);
-                    Debug.WriteLine("Complete: " + gameCreated.Complete);
-                    Debug.WriteLine("Turn: " + gameCreated.Turn);
+                    var gameCreated = _context.MySqlDb.Query<db_Game>("SELECT * FROM game;",
+                        commandType: CommandType.Text).LastOrDefault();
 
                     // Save the game's ID
                     var gameCreatedId = gameCreated.Game_Id;
@@ -150,11 +139,8 @@ namespace Battleship.Repos
 
                     var board1 = _context.MySqlDb.Query<db_Board>("SELECT * FROM board WHERE game_id = "+gameCreatedId+";", commandType: CommandType.Text).LastOrDefault();
                     var board1Id = board1.Board_Id;
-                    Debug.WriteLine("Selected the new board with the following data:");
-                    Debug.WriteLine("Board ID: " + board1.Board_Id);
-                    Debug.WriteLine("Game ID: " + board1.Game_Id);
 
-                    _context.MySqlDb.Query<db_Game>("UPDATE game SET player_1_board_id = "+board1Id+";", commandType: CommandType.Text);
+                    _context.MySqlDb.Query<db_Game>("UPDATE game SET player_1_board_id = "+board1Id+" WHERE game_id = "+gameCreatedId+";", commandType: CommandType.Text);
                     Debug.WriteLine("Updated Game with Board 1");
 
                     // Create and set the second board
@@ -163,24 +149,13 @@ namespace Battleship.Repos
 
                     var board2 = _context.MySqlDb.Query<db_Board>("SELECT * FROM board WHERE game_id = " + gameCreatedId + ";", commandType: CommandType.Text).LastOrDefault();
                     var board2Id = board2.Board_Id;
-                    Debug.WriteLine("Selected the new board with the following data:");
-                    Debug.WriteLine("Board ID: " + board1.Board_Id);
-                    Debug.WriteLine("Game ID: " + board1.Game_Id);
 
-                    _context.MySqlDb.Query<db_Game>("UPDATE game SET player_2_board_id = " + board2Id + ";", commandType: CommandType.Text);
+                    _context.MySqlDb.Query<db_Game>("UPDATE game SET player_2_board_id = " + board2Id + " WHERE game_id = " + gameCreatedId + ";", commandType: CommandType.Text);
                     Debug.WriteLine("Updated Game with Board 2");
 
                     // Re-retrieve the created game that has been updated
                     var updatedCreatedGame = _context.MySqlDb.Query<db_Game>("SELECT * FROM game WHERE game_id = "+gameCreatedId+";", 
                                             commandType: CommandType.Text).FirstOrDefault();
-                    Debug.WriteLine("Selected the updated game with the following data:");
-                    Debug.WriteLine("Game Id: " + updatedCreatedGame.Game_Id);
-                    Debug.WriteLine("Player 1: " + updatedCreatedGame.Player_1_Id);
-                    Debug.WriteLine("Player 2: " + updatedCreatedGame.Player_2_Id);
-                    Debug.WriteLine("Player 1 Board ID: " + updatedCreatedGame.Player_1_Board_Id);
-                    Debug.WriteLine("Player 1 Board ID: " + updatedCreatedGame.Player_2_Board_Id);
-                    Debug.WriteLine("Complete: " + updatedCreatedGame.Complete);
-                    Debug.WriteLine("Turn: " + updatedCreatedGame.Turn);
 
                     return updatedCreatedGame;
                 }
@@ -239,35 +214,46 @@ namespace Battleship.Repos
             }
         }
 
-        // Sets the complete status of a game in the database
+        // Creates a new game object in the database
         // RETURN: bool 
-        public db_Game SetGameBoards(db_Game game)
+        public bool RestartGame(int gameId)
         {
+            Debug.WriteLine("===========================");
             try
             {
-                return _context.MySqlDb.Query<db_Game>("UPDATE game SET " +
-                                                       "player_1_board_id = "+game.Player_1_Board_Id+"," +
-                                                       "player_2_board_id = "+game.Player_2_Board_Id+" " +
-                                                       "WHERE game_id = "+game.Game_Id+";",
-                       commandType: CommandType.Text).FirstOrDefault();
+                // get boards associated with the game
+                var boards = _context.MySqlDb.Query<db_Board>("SELECT * FROM board WHERE game_id = "+gameId+";",
+                                commandType: CommandType.Text);
+                var board1 = boards.FirstOrDefault();
+                var board2 = boards.LastOrDefault();
+
+                // delete all shots associated with the boards
+                _context.MySqlDb.Query<db_Game>("DELETE FROM shot WHERE board_id = "+board1.Board_Id+" OR board_id = "+board2.Board_Id+";",
+                    commandType: CommandType.Text);
+
+                // delete all ship locations associated with the boards
+                _context.MySqlDb.Query<db_Game>("DELETE FROM ship_location WHERE board_id = " + board1.Board_Id + " OR board_id = " + board2.Board_Id + ";",
+                    commandType: CommandType.Text);
+
+                return true;
             }
             catch (MySqlException mysqlex)
             {
-                Debug.WriteLine("MYSQL EXCEPTION IN SetGameBoards");
+                Debug.WriteLine("MYSQL EXCEPTION IN RestartGame");
                 Debug.WriteLine(mysqlex.InnerException);
-                return null;
+                return false;
             }
             catch (InvalidOperationException ioe)
             {
-                Debug.WriteLine("INVALID OPERATION EXCEPTION IN SetGameBoards");
+                Debug.WriteLine("INVALID OPERATION EXCEPTION IN RestartGame");
                 Debug.WriteLine(ioe.InnerException);
-                return null;
+                return false;
             }
             catch (Exception e)
             {
-                Debug.WriteLine("EXCEPTION IN SetGameBoards");
+                Debug.WriteLine("EXCEPTION IN RestartGame");
                 Debug.WriteLine(e.InnerException);
-                return null;
+                return false;
             }
         }
     }

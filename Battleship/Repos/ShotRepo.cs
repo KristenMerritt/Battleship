@@ -48,7 +48,8 @@ namespace Battleship.Repos
                 commandType: CommandType.Text);
         }
 
-        // Creates a new shot
+        // Creates a new shot in the DB.
+        // Switches whos turn it is in the DB.
         // PARAM: db_Shot
         // RETURN: bool
         public bool CreateNewShot(db_Shot shot)
@@ -67,7 +68,9 @@ namespace Battleship.Repos
                                                            "OR player_2_board_id = "+shot.Board_Id+";",
                     commandType: CommandType.Text).FirstOrDefault();
 
-                var nextTurn = shot.Board_Id == game.Player_1_Board_Id ? game.Player_2_Id : game.Player_1_Id;
+                var nextTurn = shot.Board_Id == game.Player_1_Board_Id ? game.Player_1_Id : game.Player_2_Id;
+
+                Debug.WriteLine("Setting turn: " + nextTurn);
 
                 _context.MySqlDb.Query<db_Game>("UPDATE game " +
                                                 "SET turn = "+nextTurn+" " +

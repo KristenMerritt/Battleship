@@ -126,19 +126,19 @@ namespace Battleship.Repos
             }
             catch (MySqlException mysqlex)
             {
-                Debug.WriteLine("MYSQL EXCEPTION IN GetAllRecentPendingPlayerChallenges");
+                Debug.WriteLine("MYSQL EXCEPTION IN AddNewChallenge");
                 Debug.WriteLine(mysqlex.InnerException);
                 return false;
             }
             catch (InvalidOperationException ioe)
             {
-                Debug.WriteLine("INVALID OPERATION EXCEPTION IN GetAllRecentPendingPlayerChallenges");
+                Debug.WriteLine("INVALID OPERATION EXCEPTION IN AddNewChallenge");
                 Debug.WriteLine(ioe.InnerException);
                 return false;
             }
             catch (Exception e)
             {
-                Debug.WriteLine("EXCEPTION IN GetAllRecentPendingPlayerChallenges");
+                Debug.WriteLine("EXCEPTION IN AddNewChallenge");
                 Debug.WriteLine(e.InnerException);
                 return false;
             }           

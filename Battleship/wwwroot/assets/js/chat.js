@@ -46,19 +46,8 @@ function initializeSendMessageEvent() {
                         Token: cookie
                     };
 
-                    $.ajax({
-                        type: "POST",
-                        cache: true,
-                        async: true,
-                        dataType: "json",
-                        url: window.location.protocol + "//" + window.location.host + "/api/Chat",
-                        data: chatMessageInfo,
-                        success: function (data) {
-                            console.log("Successfully sent chat to server.");
-                        },
-                        error: function (error) {
-                            console.log(error);
-                        }
+                    ajax("POST", true, "api/Chat", chatMessageInfo, function(data) {
+                        console.log("Successfully sent chat to server.");
                     });
                 } else {
                     alert("Invalid user login - please log in again.");
@@ -74,21 +63,11 @@ function initializeSendMessageEvent() {
  */
 function getAllChat() {
     console.log("Getting all chat...");
-    $.ajax({
-        type: "GET",
-        cache: false,
-        async: true,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Chat",
-        success: function (chatData) {
-            $.each(chatData,              
-                function (i, val) {
-                    insertNewChat(val);
-                });
-        },
-        error: function (error) {
-            console.log(error);
-        }
+    ajax("GET", true, "api/Chat", null, function(chatData) {
+        $.each(chatData,
+            function (i, val) {
+                insertNewChat(val);
+            });
     });
 };
 
@@ -98,22 +77,12 @@ function getAllChat() {
  */
 function getMostRecentChat() {
     //console.log("Getting new chat...");
-    var id = $("#last-chat-id").val();    
-    $.ajax({
-        type: "GET",
-        cache: false,
-        async: true,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Chat/"+id,
-        success: function (chatData) {
-            $.each(chatData,
-                function (i, val) {
-                    insertNewChat(val);
-                });
-        },
-        error: function (error) {
-            console.log(error);
-        }
+    var id = $("#last-chat-id").val();
+    ajax("GET", true, "api/Chat/" + id, null, function(chatData) {
+        $.each(chatData,
+            function (i, val) {
+                insertNewChat(val);
+            });
     });
 };
 

@@ -143,25 +143,6 @@ namespace Battleship.Controllers
                     invalidToken = false
                 });
             }
-
-            // Create two boards for the game
-            //var player1Board = _boardRepo.CreateBoard(createdGame.Game_Id); 
-            //var player2Board = _boardRepo.CreateBoard(createdGame.Game_Id);
-            //if (player1Board == null || player2Board == null)
-            //{
-            //    return Json(new
-            //    {
-            //        errMsg = "Error creating boards for game. Please try again.",
-            //        err = "Null returned from _board.CreateBoard",
-            //        invalidToken = false
-            //    });
-            //}
-
-            //// Set the boards in the game object reference
-            //createdGame.Player_1_Board_Id = player1Board.Board_Id; 
-            //createdGame.Player_2_Board_Id = player2Board.Board_Id;
-
-            // Set the game boards in the DB
             return Json(createdGame); 
         }
 
@@ -189,6 +170,33 @@ namespace Battleship.Controllers
             {
                 gameStatusSet = success
             });
+        }
+
+        [HttpPost]
+        [Route("start-over/{gameId}/{token}")]
+        public JsonResult StartGameOver(int gameId, string token)
+        {
+            // Ensure that we have a valid token before retreiving / modifying data
+            if (!ValidateToken(token)) return Json(new
+            {
+                errMsg = "Invalid token detected. Please log in again.",
+                invalidToken = true
+            });
+
+            // Retreive all of the active games from the DB
+            if (_gameRepo.RestartGame(gameId))
+            {
+                return Json(true);
+            }
+            else
+            {
+                return Json(new
+                {
+                    errMsg = "Error restarting game. Please try again.",
+                    err = "Failure to restart game.",
+                    invalidToken = false
+                });
+            }
         }
     }
 }

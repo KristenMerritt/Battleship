@@ -17,7 +17,9 @@ $(document).ready(function () {
     var cookie = getTokenFromCookie();
     if (cookie !== "" && cookie !== null) {
         if (validToken(cookie)) { // only look for challenges if the token is valid
+            console.log("VALID TOKEN FOR CHALLENGES");
             userId = getUserIdFromToken(cookie);
+            console.log("USER ID FOR CHALLENGES: " + userId);
             checkForChallenges(userId, cookie);
         }
     }
@@ -40,26 +42,16 @@ function initializeChallengeEvent() {
                     var player2Id = getUserIdFromHandle(player2Handle, cookie);
 
                     if (player2Id !== -1) {
-                        $.ajax({
-                            type: "POST",
-                            cache: false,
-                            async: true,
-                            dataType: "json",
-                            url: window.location.protocol + "//" + window.location.host + "/api/Challenge/new/" + player1Id + "/" + player2Id + "/" + cookie,
-                            success: function (challengeData) {
-                                if (challengeData.errMsg != null) {
-                                    sendErrorMessage(challengeData);
-                                } else {
-                                    alert("Challenge sent!");
-                                }
-                            },
-                            error: function (error) {
-                                alert("Error.");
-                                console.log(error);
+                        ajax("POST", true, "api/Challenge/new/" + player1Id + "/" + player2Id + "/" + cookie, null, function(challengeData) {
+                            if (challengeData.errMsg != null) {
+                                sendErrorMessage(challengeData);
+                            } else {
+                                alert("Challenge sent!");
                             }
                         });
+                        
                     }
-                }
+                } 
             }
         }
     );
@@ -72,25 +64,16 @@ function initializeChallengeEvent() {
  */
 function checkForChallenges(userId, cookie) {
     //console.log("Checking for pending or accepted challenges for " + userId);
-    $.ajax({
-        type: "GET",
-        cache: false,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Challenge/"+userId+"/"+cookie,
-        success: function (challengeData) {
-            if (challengeData.errMsg != null) {
-                sendErrorMessage(challengeData);
-            } else {
-                $.each(challengeData,
-                    function (i, val) {
-                        insertNewChallenge(val);
-                    });
-            }
-        },
-        error: function (error) {
-            console.log(error);
+    ajax("GET", true, "api/Challenge/" + userId + "/" + cookie, null, function(challengeData) {
+        if (challengeData.errMsg != null) {
+            sendErrorMessage(challengeData);
+        } else {
+            $.each(challengeData,
+                function (i, val) {
+                    insertNewChallenge(val);
+                });
         }
-    });
+    });    
 };
 
 /*
@@ -99,28 +82,18 @@ function checkForChallenges(userId, cookie) {
  * PARAM: int userId
  */
 function checkForNewChallenges(userId, cookie) {
-    //console.log("Checking for new challenges...");
+    console.log("Checking for new challenges...");
     var challengeId = $("#last-challenge-id").val();
-    $.ajax({
-        type: "GET",
-        cache: false,
-        async: true,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Challenge/checkNew/"+userId+"/"+challengeId+"/"+cookie,
-        success: function (challengeData) {
-            if (challengeData.errMsg != null) {
-                sendErrorMessage(challengeData);
-            } else {
-                $.each(challengeData,
-                    function(i, val) {
-                        insertNewChallenge(val);
-                    });
-            }
-        },
-        error: function (error) {
-            console.log(error);
+    ajax("GET", true, "api/Challenge/checkNew/" + userId + "/" + challengeId + "/" + cookie, null, function(challengeData) {
+        if (challengeData.errMsg != null) {
+            sendErrorMessage(challengeData);
+        } else {
+            $.each(challengeData,
+                function (i, val) {
+                    insertNewChallenge(val);
+                });
         }
-    });
+    });    
 };
 
 /*
@@ -178,17 +151,16 @@ function insertNewChallenge(val) {
     $("#last-challenge-id").val(val.challenge_Id);
 };
 
+/**
+ * Responds to a challenge in the challenge box.
+ * @param int challengeId
+ * @param bool status
+ */
 function respondToChallenge(challengeId, status) {
     var cookie = getTokenFromCookie();
     if (cookie !== "" && cookie !== null) {
         if (validToken(cookie)) { // only look for challenges if the token is valid
-            $.ajax({
-                type: "POST",
-                cache: false,
-                async: true,
-                dataType: "json",
-                url: window.location.protocol+"//"+window.location.host+"/api/Challenge/set-status/"+challengeId+"/"+status+"/"+cookie,
-                success: function (challengeData) {
+            ajax("POST", true, "api/Challenge/set-status/" + challengeId + "/" + status + "/" + cookie, null,function(challengeData) {
                     if (challengeData.errMsg != null) {
                         sendErrorMessage(challengeData);
                     } else {
@@ -200,34 +172,9 @@ function respondToChallenge(challengeId, status) {
                         } else {
                             $("#challenge_" + challengeData.challenge_Id).remove();
                         }
-                    }                  
-                },
-                error: function (error) {
-                    console.log(error);
+                    }
                 }
-            });
+            );
         }
     }
-};
-
-function getSpecificChallenge(challengeId, cookie) {
-    var challenge;
-    $.ajax({
-        type: "GET",
-        cache: false,
-        async: true,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Challenge/get-challenge/"+challengeId+"/"+cookie,
-        success: function (challengeData) {
-            if (challengeData.errMsg != null) {
-                sendErrorMessage(challengeData);
-            } else {
-                challenge = challengeData;
-            }
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-    return challenge;
 };

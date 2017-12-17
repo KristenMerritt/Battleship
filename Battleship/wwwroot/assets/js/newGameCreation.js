@@ -1,43 +1,23 @@
 ﻿function getGame(p1, p2, cookie) {
     console.log("Retrieving game data...");
     var data;
-    $.ajax({
-        type: "GET",
-        cache: false,
-        async: false,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Game/" + p1 + "/" + p2 + "/" + cookie,
-        success: function (gameData) {
-            if (gameData.errMsg != null) {
-                sendErrorMessage(gameData);
-            } else {
-                data = gameData;
-            }
-        },
-        error: function (error) {
-            console.log(error);
+    ajax("GET", false, "api/Game/" + p1 + "/" + p2 + "/" + cookie, null, function(gameData) {
+        if (gameData.errMsg != null) {
+            sendErrorMessage(gameData);
+        } else {
+            data = gameData;
         }
-    });
+    });   
     return data;
 };
 
 function getBoard(boardId) {
     var data;
-    $.ajax({
-        type: "GET",
-        cache: false,
-        async: false,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Board/" + boardId + "/" + cookie,
-        success: function (boardData) {
-            if (boardData.errMsg != null) {
-                sendErrorMessage(boardData);
-            } else {
-                data = boardData;
-            }
-        },
-        error: function (error) {
-            console.log(error);
+    ajax("GET", false, "api/Board/" + boardId + "/" + cookie, null, function(boardData) {
+        if (boardData.errMsg != null) {
+            sendErrorMessage(boardData);
+        } else {
+            data = boardData;
         }
     });
     return data;
@@ -59,22 +39,12 @@ function makeGameComponents(challengeData, cookie) {
 
 function makeStarterShips(boardId) {
     console.log("Making starter ships for board " + boardId);
-    $.ajax({
-        type: "POST",
-        cache: false,
-        async: true,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Ship/starter/" + boardId,
-        success: function (success) {
-            if (success) {
-                console.log("Ships made for " + boardId);
-                makeStarterShipLocations(boardId);
-            } else {
-                alert("Error making ships for new board.");
-            }
-        },
-        error: function (error) {
-            console.log(error);
+    ajax("POST", true, "api/Ship/starter/" + boardId, null, function(success) {
+        if (success) {
+            console.log("Ships made for " + boardId);
+            makeStarterShipLocations(boardId);
+        } else {
+            alert("Error making ships for new board.");
         }
     });
 };
@@ -82,19 +52,8 @@ function makeStarterShips(boardId) {
 function makeStarterShipLocations(boardId) {
     console.log("Making starter ship locations...");
     var ships;
-
-    $.ajax({
-        type: "GET",
-        cache: false,
-        async: false,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/Ship/all-by-board/" + boardId,
-        success: function (shipData) {
-            ships = shipData;
-        },
-        error: function (error) {
-            console.log(error);
-        }
+    ajax("GET", false, "api/Ship/all-by-board/" + boardId, null, function(shipData) {
+        ships = shipData;
     });
 
     for (var x = 0; x < ships.length; x++) {
@@ -111,22 +70,11 @@ function makeStarterShipLocations(boardId) {
                 Col: y
             };
 
-            $.ajax({
-                type: "POST",
-                cache: false,
-                async: true,
-                dataType: "json",
-                url: window.location.protocol + "//" + window.location.host + "/api/ShipLocation/createLocation",
-                data: shipLocation,
-                success: function (success) {
-                    if (success) {
-                        console.log("Location made.");
-                    } else {
-                        console.log("Error making location.");
-                    }
-                },
-                error: function (error) {
-                    console.log(error);
+            ajax("POST", true, "api/ShipLocation/createLocation", shipLocation, function(success) {
+                if (success) {
+                    console.log("Location made.");
+                } else {
+                    console.log("Error making location.");
                 }
             });
         }
@@ -135,20 +83,8 @@ function makeStarterShipLocations(boardId) {
 
 function getShipLength(shipType) {
     var length = -1;
-
-    $.ajax({
-        type: "GET",
-        cache: false,
-        async: false,
-        dataType: "json",
-        url: window.location.protocol + "//" + window.location.host + "/api/ShipType/" + shipType,
-        success: function (shipTypeData) {
-            length = shipTypeData.ship_Length;
-        },
-        error: function (error) {
-            console.log(error);
-        }
+    ajax("GET", false, "api/ShipType/" + shipType, null, function(shipTypeData) {
+        length = shipTypeData.ship_Length;
     });
-
     return length;
 };

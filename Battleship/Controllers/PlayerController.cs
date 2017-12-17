@@ -12,7 +12,6 @@ namespace Battleship.Controllers
     public class PlayerController : BaseController
     {
         private readonly PlayerRepo _playerRepo; // DB repo class
-        private const string InvalidTokenMsg = "Token not validated.";
 
         public PlayerController(PlayerRepo playerRepo) : base(playerRepo)
         {
@@ -48,13 +47,15 @@ namespace Battleship.Controllers
         [Route("by-token/{token}")]
         public JsonResult GetPlayerByToken(string token)
         {
-            if (base.ValidateToken(token))
+            if (!base.ValidateToken(token)) return Json(new
             {
-                var id = base.GetUserIdFromToken(token);
-                return Json(_playerRepo.GetPlayerById(id));
-            }
-            var error = new {err = InvalidTokenMsg };
-            return Json(error);
+                errMsg = "Invalid token detected. Please log in again.",
+                err = "Invalid token.",
+                invalidToken = true
+            });
+
+            var id = base.GetUserIdFromToken(token);
+            return Json(_playerRepo.GetPlayerById(id));
         }
 
         // GET: api/Player/handle/token
@@ -66,12 +67,14 @@ namespace Battleship.Controllers
         [Route("by-handle/{handle}/{token}")]
         public JsonResult GetPlayerByHandle(string handle, string token)
         {
-            if (base.ValidateToken(token))
+            if (!base.ValidateToken(token)) return Json(new
             {
-                return Json(base.GetUserByHandle(handle));
-            }
-            var error = new { err = InvalidTokenMsg };
-            return Json(error);
+                errMsg = "Invalid token detected. Please log in again.",
+                err = "Invalid token.",
+                invalidToken = true
+            });
+
+            return Json(base.GetUserByHandle(handle));
         }
 
         // POST: api/Player

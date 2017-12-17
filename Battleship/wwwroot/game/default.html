@@ -42,11 +42,7 @@
     </nav>
 
     <!-- MAIN CONTENT -->
-<div class="container">
-    <input id="gameId" type="hidden" value="" />
-    <input id="currentPlayer-board-id" type="hidden" value="" />
-    <input id="opponent-board-id" type="hidden" value="" />
-    
+<div id="main-container" class="container">
     <div id="gameInfoContainer">
         <div id="playerInfoContainer">
             <h2 class="currentPlayer-handle">Player Name</h2>
@@ -56,9 +52,6 @@
         <div id="loading_game">
             <h1>Loading game...</h1>
             <img id="spinner" src="../assets/loading_spinner.gif"/>
-        </div>
-        <div id="test_output">
-            <p></p>
         </div>
     </div>
 
@@ -91,11 +84,9 @@
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500px" height="550px">
                 <rect x="0px" y="0px" width="100%" height="100%" id="board-1-background" fill="#cecece" stroke="black"></rect>
                 <text class="currentPlayer-handle" x="50px" y="530px"></text>
-                <text class="hit-board-text" x="250px" y="530px">HIT</text>
-                <text class="miss-board-text" x="300px" y="530px">MISS</text>
             </svg>
             <button id="place_Ships">Place Ships & Begin</button>
-            <button id="place_Ships">Start Over</button>
+            <button id="start_over">Start Over</button>
         </div>
     </div>
 
@@ -128,8 +119,6 @@
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500px" height="550px">
                 <rect x="0px" y="0px" width="100%" height="100%" id="board-2-background" fill="#cecece" stroke="black"></rect>
                 <text class="opponent-handle" x="50px" y="530px"></text>
-                <text class="hit-board-text" x="250px" y="530px">HIT</text>
-                <text class="miss-board-text" x="300px" y="530px">MISS</text>
             </svg>
         </div>
     </div>

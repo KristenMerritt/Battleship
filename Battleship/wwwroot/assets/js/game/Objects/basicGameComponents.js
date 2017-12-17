@@ -162,41 +162,30 @@ Hole.prototype = {
         console.log(split);
         var playerBoard = split[2];
 
-        if ($(".currentPlayer-handle").hasClass("player-turn")) {
+        if (game.turn == game.currentPlayerId) {
             if (playerBoard == "p2") {
                 // Create a ShipLocation object with the data
                 var shipLocation = {
                     Ship_Location_Id: -1,
                     Ship_Id: -1,
-                    Board_Id: $("#opponent-board-id").val(), // change later
+                    Board_Id: game.opponentPlayerBoardId,
                     Row: holeRow,
                     Col: holeCol
                 };
 
                 // Send the ShipLoation daa to make a shot at the location in the DB
-                $.ajax({
-                    type: "POST",
-                    cache: false,
-                    async: false,
-                    dataType: "json",
-                    url: window.location.protocol + "//" + window.location.host + "/api/ShipLocation/checkHit",
-                    data: shipLocation,
-                    success: function(shotData) {
-                        if (shotData.err != null) {
-                            sendErrorMessage(shotData);
+                ajax("POST", false, "api/ShipLocation/checkHit", shipLocation, function(shotData) {
+                    if (shotData.err != null) {
+                        sendErrorMessage(shotData);
+                    } else {
+                        hit = shotData.is_Hit;
+                        if (hit) {
+                            Hole.prototype.hit(hole);
                         } else {
-                            hit = shotData.is_Hit;
-                            if (hit) {
-                                Hole.prototype.hit(hole);
-                            } else {
-                                Hole.prototype.miss(hole);
-                            }
+                            Hole.prototype.miss(hole);
                         }
-                    },
-                    error: function(error) {
-                        console.log(error);
                     }
-                });
+                });                
             } else {
                 alert("Wrong board.");
             }
@@ -237,12 +226,14 @@ Hole.prototype = {
 
 // ShipPiece constructor
 // creates and initializes each ShipPiece object
-function ShipPiece(parent, row, col, num) {
+function ShipPiece(parent, row, col, num, isHit) {
     // Setting basic variables
     this.parent = parent;		// The g of the ship that the ShipPiece will be part of
-    this.row = row;
+    this.row = row; // not sure where i mixed these two up
     this.col = col;
     this.number = num;
+    this.isHit = isHit;
+    console.log("IS HIT IN ELEMENT: " + this.isHit);
     this.parentType = this.parent.getAttribute("type");
     this.id = this.parentType + "_piece_" + this.number;
 
@@ -251,7 +242,13 @@ function ShipPiece(parent, row, col, num) {
     this.piece.setAttributeNS(null, "transform", "translate(" + this.row * 50 + "," + this.col * 50+ ")");
     this.piece.setAttributeNS(null, "height", '50px');
     this.piece.setAttributeNS(null, 'width', '50px');
-    this.piece.setAttributeNS(null, 'fill', 'white');
+    if (this.isHit) {
+        this.piece.setAttributeNS(null, 'fill', 'red');
+    } else {
+        this.piece.setAttributeNS(null, 'fill', 'white');
+    }   
+    this.piece.setAttribute("row", row);
+    this.piece.setAttribute("col", col);
 
     this.piece.addEventListener('mousedown', function () {
         drag.setMove(this.parentElement.getAttribute("type"));
@@ -263,7 +260,7 @@ function ShipPiece(parent, row, col, num) {
     return this;
 }
 
-Piece.prototype = {
+ShipPiece.prototype = {
     //change cell (used to move the piece to a new cell and clear the old)
     changeLocation: function (row, col) {
         //this.current_cell.notOccupied();
@@ -277,9 +274,9 @@ Piece.prototype = {
         document.getElementsByTagName('svg')[0].appendChild(this.piece);
     },
     //will record that I'm now hit
-    place: function (id) {
-        //this.isHit = true;
-        //document.getElementById(this.id).setAttributeNS(null, 'class', 'hit');
+    hit: function () {
+        this.isHit = true;
+        this.setAttributeNS(null, 'fill', 'red');
     },
     // function that allows a quick setting of an attribute of the specific piece object
     setAtt: function (att, val) {
