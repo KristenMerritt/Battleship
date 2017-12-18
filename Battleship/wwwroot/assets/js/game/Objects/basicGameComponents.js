@@ -1,4 +1,15 @@
-﻿//////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////
+//                                                              //
+//  Basic Components Javascript File		        	        //
+//  Description:  This file contains the scripts and classes    //
+//                for the basic game components, such as        //
+//                Cells, Holes, and ShipPieces                  //
+//                                                              //
+//////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////
 // Class: Cell										//
 // Description:  This will create a cell object		// 
 // (board square) that you can reference from the 	//
@@ -10,9 +21,6 @@
 //		row    - the row it is located on           //
 //		col    - the col it is located on           //
 //////////////////////////////////////////////////////
-
-
-// Cell constructor()
 function Cell(parent, id, size, row, col) {
     // Basic variables for the cell
     this.parent = parent;
@@ -33,12 +41,6 @@ function Cell(parent, id, size, row, col) {
     this.myBBox = this.getMyBBox();
 }
 
-
-//////////////////////////////////////////////////////
-// Cell : Methods									//
-// Description:  All of the methods for the			// 
-// Cell Class                               		//
-//////////////////////////////////////////////////////
 Cell.prototype = {
     create: function () {
         var rectEle = document.createElementNS(game.svgns, 'rect'); // Create the svg rect that will represent the cell
@@ -48,31 +50,24 @@ Cell.prototype = {
         rectEle.setAttributeNS(null, 'height', this.size + 'px');
         rectEle.setAttributeNS(null, 'id', this.id);                // Set the ID of the svg element
         rectEle.setAttributeNS(null, 'stroke', '#8d9096');          // Set the stroke of the svg element
-        rectEle.onclick = function () { alert(this.id); };          // Create an alert for testing purposes
         return rectEle;
     },
-    //get my bbox
     getMyBBox: function () {
         return this.object.getBBox();
     },
-    //get CenterX
     getCenterX: function () {
         return (game.BOARDX + this.x + (this.size / 2));
     },
-    //get CenterY
     getCenterY: function () {
         return (game.BOARDY + this.y + (this.size / 2));
     },
-    //set a cell to be occupied by a ShipPiece
     placeShipPiece: function (pieceId) {
         this.shipPiece = pieceId;
     },
-    //set cell to empty
     removeShipPiece: function () {
         this.shipPiece = '';
     }
 }
-
 
 
 //////////////////////////////////////////////////////
@@ -88,8 +83,6 @@ Cell.prototype = {
 //      cx     - the svg circle's cx                //
 //      cy     - the svg circle's cy                //
 //////////////////////////////////////////////////////
-
-// Hole constructor()
 function Hole(parent, id, size, row, col, cx, cy) {
     // Basic variables for the Hole
     this.parent = parent;       
@@ -110,12 +103,6 @@ function Hole(parent, id, size, row, col, cx, cy) {
     this.myBBox = this.getMyBBox();
 }
 
-
-//////////////////////////////////////////////////////
-// Hole : Methods									//
-// Description:  All of the methods for the			// 
-// Hole Class                               		//
-//////////////////////////////////////////////////////
 Hole.prototype = {
     create: function () {
         var circleEle = document.createElementNS(game.svgns, 'circle');    // Create the circle svg element
@@ -137,19 +124,15 @@ Hole.prototype = {
 
         return circleEle;
     },
-    //get my bbox
     getMyBBox: function () {
         return this.object.getBBox();
     },
-    //get CenterX
     getCenterX: function () {
         return (game.BOARDX + this.x + (this.size / 2));
     },
-    //get CenterY
     getCenterY: function () {
         return (game.BOARDY + this.y + (this.size / 2));
     },
-    //set a cell to occupied
     shoot: function (hole) {      
         var holeEle = document.getElementById(hole.id);   // Retrieve the hole that was shot at & its row/col
         var holeRow = holeEle.getAttribute('row');
@@ -157,7 +140,6 @@ Hole.prototype = {
         var hit = false;
         var err = false;
 
-        //alert("Hole: " + hole.id + " Row: " + holeRow + " Col: " + holeCol);
         var split = hole.id.split("_");
         console.log(split);
         var playerBoard = split[2];
@@ -227,10 +209,6 @@ Hole.prototype = {
 //		row    - the row it is located on           //
 //		col    - the col it is located on           //
 //////////////////////////////////////////////////////
-
-
-// ShipPiece constructor
-// creates and initializes each ShipPiece object
 function ShipPiece(parent, row, col, num, isHit) {
     // Setting basic variables
     this.parent = parent;		// The g of the ship that the ShipPiece will be part of
@@ -238,7 +216,6 @@ function ShipPiece(parent, row, col, num, isHit) {
     this.col = col;
     this.number = num;
     this.isHit = isHit;
-    console.log("IS HIT IN ELEMENT: " + this.isHit);
     this.parentType = this.parent.getAttribute("type");
     this.id = this.parentType + "_piece_" + this.number;
 
@@ -247,11 +224,13 @@ function ShipPiece(parent, row, col, num, isHit) {
     this.piece.setAttributeNS(null, "transform", "translate(" + this.row * 50 + "," + this.col * 50+ ")");
     this.piece.setAttributeNS(null, "height", '50px');
     this.piece.setAttributeNS(null, 'width', '50px');
+
     if (this.isHit) {
         this.piece.setAttributeNS(null, 'fill', 'red');
     } else {
         this.piece.setAttributeNS(null, 'fill', 'white');
     }   
+
     this.piece.setAttribute("row", row);
     this.piece.setAttribute("col", col);
 
@@ -273,17 +252,14 @@ ShipPiece.prototype = {
         //this.current_cell = game.boardArr[row][col];
         //this.current_cell.isOccupied(this.id);
     },
-    //when called, will remove the piece from the document and then re-append it (put it on top!)
     putOnTop: function () {
         document.getElementsByTagName('svg')[0].removeChild(this.piece);
         document.getElementsByTagName('svg')[0].appendChild(this.piece);
     },
-    //will record that I'm now hit
     hit: function () {
         this.isHit = true;
         this.setAttributeNS(null, 'fill', 'red');
     },
-    // function that allows a quick setting of an attribute of the specific piece object
     setAtt: function (att, val) {
         this.piece.setAttributeNS(null, att, val);
     }

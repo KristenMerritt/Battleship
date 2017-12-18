@@ -1,15 +1,43 @@
-﻿/*
- * Contains scripts used in all pages.
- * @author Kristen Merritt
- */
+﻿//////////////////////////////////////////////////////////////////
+//                                                              //
+//  Shared Javascript File						                //
+//  Description:  This file contains various scripts used       //
+//                throughout the entire application.            //
+//                                                              //
+//////////////////////////////////////////////////////////////////
 
-/*
- * Checks to see if a token is valid. Returns true if valid.
- * PARAM: string cookie
- * RETURN: bool valid
+$(document).ready(function () {
+    getBrowser();
+});
+
+/**
+ * Checks to make sure the browser being used is Chrome.
+ * No other browser was tested due to time contraints.
+ */
+function getBrowser() {
+    if (navigator.userAgent.indexOf("Chrome") != -1) {
+        // good
+    } else if (navigator.userAgent.indexOf("Opera") != -1) {
+        alert("Please use chrome.");
+        window.location.href = "https://support.google.com/chrome/answer/95346?co=GENIE.Platform%3DDesktop&hl=en";
+    } else if (navigator.userAgent.indexOf("MSIE") != -1) {
+        alert("Please use chrome.");
+        window.location.href = "https://support.google.com/chrome/answer/95346?co=GENIE.Platform%3DDesktop&hl=en";
+    } else if (navigator.userAgent.indexOf("Firefox") != -1) {
+        alert("Please use chrome.");
+        window.location.href = "https://support.google.com/chrome/answer/95346?co=GENIE.Platform%3DDesktop&hl=en";
+    } else {
+        alert("Please use chrome.");
+        window.location.href = "https://support.google.com/chrome/answer/95346?co=GENIE.Platform%3DDesktop&hl=en";
+    }
+};
+
+/**
+ * Checks to see if the token is valid or not.
+ * Will return true if valid, false if invalid.
+ * @param string cookie
  */
 function validToken(cookie) {
-    //console.log("Validating token...");
     var validToken = false;
     ajax("GET", false, "api/CheckToken/"+cookie, null, function(valid) {
         validToken = valid;
@@ -17,13 +45,13 @@ function validToken(cookie) {
     return validToken;
 };
 
-/*
- * Gets the token from the cookie.
- * RETURN: string token
+/**
+ * Gets the token from the cookie variable.
+ * Returns the cookie found.
+ * https://stackoverflow.com/questions/10730362/get-cookie-by-name
  */
 function getTokenFromCookie() {
-    //console.log("Getting token from cookie...");
-    var name = "bashto=";
+    var name = "bashto="; // name of the cookie
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(";");
     for (var i = 0; i < ca.length; i++) {
@@ -38,35 +66,38 @@ function getTokenFromCookie() {
     return "";
 };
 
-/*
- * Sets the cookie to the value and expiration specified.
- * PARAM: string cvalue, int exdays
+/**
+ * Sets the cookie to the new token value.
+ * @param string cvalue
+ * @param int exdays
  */
 function setTokenCookie(cvalue, exdays) {
-    //console.log("Setting token...");
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
     var expires = "expires=" + d.toUTCString();
     document.cookie = "bashto=" + cvalue + ";" + expires + ";path=/";
 };
 
+/**
+ * Helper function. Sends an error message to the screen
+ * and console. If the error says that the token is invalid,
+ * log the user out by resetting the cookie.
+ * @param json errorData
+ */
 function sendErrorMessage(errorData) {
-    console.log(errorData);
-    alert(errorData.errMsg);
-    console.log(errorData.err);
+    alert(errorData.errMsg); // message for the user
+    console.log(errorData.err); // message for the dev
     if (errorData.invalidToken) {
         document.cookie = 'bashto=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         window.location.href = "/";
     }
 };
 
-/*
- * Retrieves the user handle from an ID.
- * PARAM: int id
- * RETURN: string handle
+/**
+ * Gets the user handle from a player ID.
+ * @param int id
  */
 function getUserHandle(id) {
-    //console.log("Getting user handle from id...");
     var handle = "Unknown";
     ajax("GET", false, "api/Player/by-id/" + id, null, function(userData) {
         handle = userData.handle;
@@ -74,13 +105,11 @@ function getUserHandle(id) {
     return handle;
 };
 
-/*
- * Retrieves the user handle from token provided.
- * PARAM: string cookie
- * RETURN: string handle
+/**
+ * Gets the user handle from the token.
+ * @param {any} cookie
  */
 function getUserHandleFromToken(cookie) {
-    //console.log("Getting user handle from token...");
     ajax("GET", true, "api/Player/by-token/" + cookie, null, function(userData) {
         if (userData.err != null) {
             sendErrorMessage(userData);
@@ -91,13 +120,11 @@ function getUserHandleFromToken(cookie) {
     });    
 };
 
-/*
- * Gets a user ID from the token provided.
- * PARAM: string cookie
- * RETURN: int userId
+/**
+ * Gets the user ID from the token.
+ * @param {any} cookie
  */
 function getUserIdFromToken(cookie) {
-    //console.log("Getting user id from token...");
     var userId = null;
     ajax("GET", false, "api/Player/by-token/" + cookie, null, function(userData) {
         if (userData.err != null) {
@@ -109,14 +136,12 @@ function getUserIdFromToken(cookie) {
     return userId;
 };
 
-/*
- * Gets a user ID from the handle provided.
- * PARAM: string handle
- * PARAM: string token
- * RETURN: int userId
+/**
+ * Gets the user ID from the handle provided.
+ * @param string handle
+ * @param string token
  */
 function getUserIdFromHandle(handle, token) {
-    //console.log("Getting user id from handle...");
     var userId = null;
     ajax("GET", false, "api/Player/by-handle/" + handle + "/" + token, null, function(playerData) {
         if (playerData.err != null) {
@@ -128,12 +153,13 @@ function getUserIdFromHandle(handle, token) {
     return userId;
 };
 
-/*
- * Helper function that makes an ajax call
- * PARAM: string type
- * PARAM: bool async
- * PARAM: string url
- * RETURN: json dataReturned
+/**
+ * Helper function. Makes an ajax call.
+ * @param string type
+ * @param bool async
+ * @param string url
+ * @param json data
+ * @param function success
  */
 function ajax(type, async, url, data, success) {
     if (data != null) {

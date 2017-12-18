@@ -1,111 +1,114 @@
-﻿/*
- * Contains scripts used for chat in Battleship.
- * @author Kristen Merritt
- */
+﻿//////////////////////////////////////////////////////////////////
+//                                                              //
+//  Chat Javascript File		        				        //
+//  Description:  This file contains various scripts used       //
+//                for chat in the application.                  //
+//                                                              //
+//////////////////////////////////////////////////////////////////
 
 $(document).ready(function () {
-    initializeUserHandle(); // Change the User Handle to reflect who is logged in based off of the token
-    initializeSendMessageEvent(); // Add the send message event to the chat form
-    getAllChat(); // Retrieve all of the chat data
+    initializeUserHandle();         // Change the User Handle to reflect who is logged in based off of the token
+    initializeSendMessageEvent();   // Add the send message event to the chat form
+    getAllChat();                   // Retrieve all of the chat data
 
-    window.setInterval(function () {
+    window.setInterval(function () {// Get new chat every second
         getMostRecentChat();
     }, 1000);
 });
 
-/*
+/**
  * Checks the cookie/token for the user ID and sets the
  * user handle on the page accordinly.
  */
 function initializeUserHandle() {
-    //console.log("Initializing user handle...");
     var cookie = getTokenFromCookie();
     if (cookie !== "" && cookie !== null) {
         getUserHandleFromToken(cookie);       
     }
 };
 
-/*
+/**
  * Once the document loads, sets an onsubmit listener to the
  * form used to send messages to the chat.
  * Prevents the form's default action, checks the token,
  * and sends the message information to the server for processing.
  */
 function initializeSendMessageEvent() {
-    //console.log("Initializing send message event...");
-    var cookie = getTokenFromCookie(); // Get the token from the cookie
+    var cookie = getTokenFromCookie(); 
+
     $("#chat-form").on("submit",
         function (e) {
-            e.preventDefault(); // Prevent the default action of the form
-            if (cookie !== "" && cookie !== null) { // Check to make sure the cookie has a value
-                if (validToken(cookie)) { // Check to make sure the cookie is valid before sending anything
+            e.preventDefault(); 
+            if (cookie !== "" && cookie !== null) { 
+                if (validToken(cookie)) { 
+                    // Get the message the user wants to send
                     var message = $("input[name='chat-message']").val(); 
 
-                    var chatMessageInfo = { // represents a ChatMessageInfo model
+                    var chatMessageInfo = { 
                         Message: message,
                         Token: cookie
                     };
 
+                    // Send the message to the database
                     ajax("POST", true, "api/Chat", chatMessageInfo, function(data) {
-                        console.log("Successfully sent chat to server.");
+                        //console.log("Successfully sent chat to server.");
                     });
                 } else {
                     alert("Invalid user login - please log in again.");
-                    // Log the user out?
                 }
             }
         });
 };
 
-/*
+/**
  * Retrieves all of the chat data from the server.
  * For each chat, calls insertNewChat();
  */
 function getAllChat() {
-    console.log("Getting all chat...");
     ajax("GET", true, "api/Chat", null, function(chatData) {
-        $.each(chatData,
-            function (i, val) {
-                insertNewChat(val);
-            });
+        $.each(chatData, function (i, val) {
+            insertNewChat(val);
+        });       
     });
 };
 
-/*
+/**
  * Retrieves all chat after a specified ID.
  * Calls insertNewChat() for every chat recieved.
  */
 function getMostRecentChat() {
-    //console.log("Getting new chat...");
     var id = $("#last-chat-id").val();
     ajax("GET", true, "api/Chat/" + id, null, function(chatData) {
-        $.each(chatData,
-            function (i, val) {
-                insertNewChat(val);
-            });
+        $.each(chatData, function (i, val) {
+            insertNewChat(val);
+        });       
     });
 };
 
-/*
- * Inserts new chat into the document
- * PARAM: json val
+/**
+ * Inserts new chat into the HTML
+ * @param json val
  */
 function insertNewChat(val) {
-    console.log("Inserting new chat...");
+    // Create the div element to contain the chat message
     var div = document.createElement("div");
     div.setAttribute("class", "chat-item");
 
+    // Create the p element to hold the text
     var para = document.createElement("p");
     para.setAttribute("class", "chat-text");
     var message = document.createTextNode(val.message);
 
+    // Create the span that will hold the handle
     var span = document.createElement("span");
     span.setAttribute("class", "chat-name");
 
+    // Set the handle
     var handle = getUserHandle(val.player_Id);
     var handleEl = document.createTextNode(handle + ": ");
     span.appendChild(handleEl);
 
+    // Append all of the elments
     para.appendChild(span);
     para.appendChild(message);
     div.appendChild(para);

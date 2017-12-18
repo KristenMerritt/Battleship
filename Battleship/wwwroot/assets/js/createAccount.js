@@ -1,10 +1,13 @@
-﻿/*
- * Contains scripts used for creating a new account in Battleship.
- * @author Kristen Merritt
- */
+﻿//////////////////////////////////////////////////////////////////
+//                                                              //
+//  Create Account Javascript File						        //
+//  Description:  This file contains various scripts used       //
+//                to create a new account in the application.   //
+//                                                              //
+//////////////////////////////////////////////////////////////////
 
-/*
- * Adds an on submit listener to the create-account-form.
+
+/**
  * Retrieves the handle and password used in the login attempt,
  * and passes it to the REST endpoint for validation.
  * If it is a successful creation, set the cookie/token, then
@@ -19,7 +22,7 @@ $(document).ready(function () {
         var uname = $("input[name='handle']").val();
         var pass = $("input[name='password']").val();
 
-        var newAccount = { // Reflects the db_Player model
+        var newAccount = {
             PlayerId: -1,
             Handle: uname,
             Password: pass,
@@ -33,6 +36,5 @@ $(document).ready(function () {
             window.location = "/";
         });
     });
-
 });
 

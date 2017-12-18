@@ -1,7 +1,10 @@
-﻿/*
- * Contains scripts used for logging in to Battleship
- * @author Kristen Merritt
- */
+﻿//////////////////////////////////////////////////////////////////
+//                                                              //
+//  Login Javascript File						                //
+//  Description:  This file contains the scripts required       //
+//                to log a player into the application.         //
+//                                                              //
+//////////////////////////////////////////////////////////////////
 
 $(document).ready(function () {
     initializeLoginEvent();
@@ -15,36 +18,28 @@ $(document).ready(function () {
  * redirect the user to the home page.
  */
 function initializeLoginEvent() {
-    $("#login-form").on("submit", function (e) {
-        e.preventDefault();
+    $("#login-form").on("submit",
+        function(e) {
+            e.preventDefault();
 
-        var handle = $("input[name='handle']").val();
-        var pass = $("input[name='password']").val();
+            // Get the login data
+            var handle = $("input[name='handle']").val();
+            var pass = $("input[name='password']").val();
 
-        var playerLoginInfo = { // Reflects the PlayerLoginInfo model
-            Handle: handle,
-            Password: pass
-        }
+            // Create the login data object
+            var playerLoginInfo = { // Reflects the PlayerLoginInfo model
+                Handle: handle,
+                Password: pass
+            }
 
-        $.ajax({
-            type: "POST",
-            cache: false,
-            dataType: "json",
-            url: window.location.protocol + "//"+window.location.host+"/api/login",
-            data: playerLoginInfo, // PlayerLoginInfo model
-            success: function (data) {
+            // Send data to the database for verification
+            ajax("POST", true, "api/login", playerLoginInfo, function(data) {
                 if (data.success) {
-                    setTokenCookie(data.token, 1); // this method is in token_validation.js
+                    setTokenCookie(data.token, 1); 
                     window.location = "/";
                 } else {
                     alert("Error with login. \n" + data.errors);
                 }
-                
-            },
-            error: function (error) {
-                console.log("Error in login attempt");
-            }
+            });        
         });
-    });
 };
-
