@@ -125,7 +125,7 @@ namespace Battleship.Controllers
                     Player_1_Id = updatedChallenge.Player_1,
                     Player_2_Id = updatedChallenge.Player_2,
                     Complete = false,
-                    Turn = -1
+                    Turn = updatedChallenge.Player_1
                 };
 
                 // Make the game
