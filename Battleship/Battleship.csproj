@@ -5,6 +5,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\challenges.css" />
+    <Content Include="Content\chat.css" />
+    <Content Include="Content\default.css" />
+    <Content Include="Content\game.css" />
+    <Content Include="Content\login.css" />
+    <Content Include="Scripts\challenge.js" />
+    <Content Include="Scripts\chat.js" />
+    <Content Include="Scripts\createAccount.js" />
+    <Content Include="Scripts\game\basicGameComponents.js" />
+    <Content Include="Scripts\game\gameFunctions.js" />
+    <Content Include="Scripts\game\initialLoad.js" />
+    <Content Include="Scripts\game\ships.js" />
+    <Content Include="Scripts\game\util.js" />
+    <Content Include="Scripts\login.js" />
+    <Content Include="Scripts\newGameCreation.js" />
+    <Content Include="Scripts\popper.js" />
+    <Content Include="Scripts\shared.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier" Version="2.6.362" />
     <PackageReference Include="Dapper" Version="1.50.2" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.0.1" />

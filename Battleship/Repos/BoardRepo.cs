@@ -14,27 +14,41 @@ namespace Battleship.Repos
     {
         private readonly DataContext _context;
 
+        /// <summary>
+        /// Repo for the Board Table. Directly 
+        /// talks to the database.
+        /// </summary>
+        /// <param name="context"></param>
         public BoardRepo(DataContext context)
         {
             _context = context;
         }
 
-        // Retreives all of the boards in the database
-        // RETURN: IEnumerable<db_Board> 
+        /// <summary>
+        /// Retreives all of the boards in the database.
+        /// </summary>
+        /// <returns>IEnumerable<db_Board></returns>
         public IEnumerable<db_Board> GetAllBoards()
         {
             return _context.MySqlDb.Query<db_Board>("SELECT * FROM board;", commandType: CommandType.Text);
         }
 
-        // Retreives a board in the database
-        // RETURN: db_Board
+        /// <summary>
+        /// Retreives a single board in the database.
+        /// </summary>
+        /// <param name="boardId"></param>
+        /// <returns>db_Board</returns>
         public db_Board GetBoard(int boardId)
         {
             return _context.MySqlDb.Query<db_Board>("SELECT * FROM board WHERE board_id = "+boardId+";", commandType: CommandType.Text).FirstOrDefault();
         }
 
-        // Retreives all of the boards for a player in the database
-        // RETURN: IEnumerable<db_Board> 
+
+        /// <summary>
+        /// Retreives all of the boards for a player in the database.
+        /// </summary>
+        /// <param name="gameId"></param>
+        /// <returns>IEnumerable<db_Board></returns>
         public IEnumerable<db_Board> GetAllBoardsForGame(int gameId)
         {
             try
@@ -63,8 +77,11 @@ namespace Battleship.Repos
             }
         }
 
-        // Creates a new board
-        // RETURN: db_Board 
+        /// <summary>
+        /// Creates a new board in the database.
+        /// </summary>
+        /// <param name="gameId"></param>
+        /// <returns>db_Board</returns>
         public db_Board CreateBoard(int gameId)
         {
             try

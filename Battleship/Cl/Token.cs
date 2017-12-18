@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
 namespace Battleship.Cl
@@ -15,46 +10,47 @@ namespace Battleship.Cl
         private string UserIpAddress { get; set; }
         public string UserToken { get; set; }
 
+        /// <summary>
+        /// Creates, validates, decodes tokens
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="ip"></param>
         public Token(int userId, string ip)
         {
             UserId = userId;
             UserIpAddress = ip;
-
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- Token User Ip Address: " + UserIpAddress);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- Token User Ip Address: " + UserIpAddress);
-
             Time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
         }
 
+        /// <summary>
+        /// Token constructor. Sets a new date.
+        /// </summary>
         public Token()
         {
             Time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
         }
 
+        /// <summary>
+        /// Generates a new token based off 
+        /// of the user IP and ID
+        /// </summary>
+        /// <returns>New user token</returns>
         public string GenerateToken()
         {
-            Debug.WriteLine(" ============= Generating New Token ==============");
-
             var removedChars = RemoveChars(UserIpAddress);
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- Removed Chars: " + removedChars);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- Removed Chars: " + removedChars);
-
             var hexIp = StringToHex(removedChars); // obscured ip address changed to HEX
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- HexIP: " + hexIp);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- HexIP: " + hexIp);
-
             var obscuredIp = ObscureToken(hexIp); // ip address with random numbers in between
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- Obscured IP: " + obscuredIp);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- Obscured IP: " + obscuredIp);
-
             var hexId = StringToHex(UserId.ToString()); // normal ID changed to HEX
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- Hex ID: " + hexId);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- Hex ID: " + hexId);
 
             UserToken = obscuredIp + "|" + hexId;
             return UserToken;           
         }
 
+        /// <summary>
+        /// Obscures a token
+        /// </summary>
+        /// <param name="str">Unobscured token</param>
+        /// <returns> Obscured token</returns>
         private static string ObscureToken(string str)
         {
             var obscuredToken = str;
@@ -75,47 +71,54 @@ namespace Battleship.Cl
             return obscuredToken;
         }
 
+        /// <summary>
+        /// Decodes a token
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns>Decoded token</returns>
         public JObject DecodeToken(string token)
         {
             if (token.Contains("%7C"))
                 token = token.Replace("%7C", "|");
 
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- (DecodeToken) Decoding token: " + token);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- (DecodeToken) Decoding token: " + token);
-
             var ip = DecodeIpAddress(token);
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- (DecodeToken) Decoded IP address: " + ip);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- (DecodeToken) Decoded IP address: " + ip);
-
             var userId = DecodeUserId(token);
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- (DecodeToken) Decoded user ID: " + userId);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- (DecodeToken) Decoded user ID: " + userId);
 
             return JObject.Parse("{'ip':"+ip+", 'id':"+userId+"}");
         }
 
+        /// <summary>
+        /// Converts the string to hex
+        /// </summary>
+        /// <param name="str">String to convert</param>
+        /// <returns>Converted string</returns>
         private static string StringToHex(string str)
         {
             var ipInt = Int64.Parse(str);
             return ipInt.ToString("X");
         }
 
+        /// <summary>
+        /// Removes unwanted chars from ip string
+        /// </summary>
+        /// <param name="ip">The raw ip address</param>
+        /// <returns>IP without chars</returns>
         public string RemoveChars(string ip)
         {
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- (RemoveChars) IP given to RemoveChars(): " + ip);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- (RemoveChars) IP given to RemoveChars(): " + ip);
             if (ip.Contains(":"))
             {
                 ip = ip.Substring(0, ip.IndexOf(":"));
             }           
             ip = ip.Replace(".", string.Empty);
 
-            //Console.WriteLine(DateTime.Now.ToString("G") + " -- (RemoveChars) IP returned from RemoveChars(): " + ip);
-            //Debug.WriteLine(DateTime.Now.ToString("G") + " -- (RemoveChars) IP returned from RemoveChars(): " + ip);
-
             return ip;
         }
 
+        /// <summary>
+        /// Decodes the IP address from a token
+        /// </summary>
+        /// <param name="token">Undecoded token</param>
+        /// <returns>IP address</returns>
         private static string DecodeIpAddress(string token)
         {
             var end = token.LastIndexOf("|");
@@ -128,6 +131,11 @@ namespace Battleship.Cl
             return DecodeHexToBase10(hexIp);
         }
 
+        /// <summary>
+        /// Decodes the user ID from a token
+        /// </summary>
+        /// <param name="token">Undecoded token</param>
+        /// <returns>User ID</returns>
         private static int DecodeUserId(string token)
         {
             var start = token.LastIndexOf("|");
@@ -135,12 +143,22 @@ namespace Battleship.Cl
             return DecodeHexToInt32(hexId);
         }
 
+        /// <summary>
+        /// Converts hex to int
+        /// </summary>
+        /// <param name="hex">Hex to decode</param>
+        /// <returns>String converted from hex</returns>
         private static Int32 DecodeHexToInt32(string hex)
         {
             return Int32.Parse(hex, System.Globalization.NumberStyles.HexNumber);
         }
 
-        // https://csharpfunctions.blogspot.com/2010/03/convert-hex-formatted-string-to-base64.html
+        /// <summary>
+        /// Decodes hex to base 10
+        /// Found at https://csharpfunctions.blogspot.com/2010/03/convert-hex-formatted-string-to-base64.html
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <returns>Base 10 hex</returns>
         private static string DecodeHexToBase10(string hex)
         {
             return int.Parse(hex, System.Globalization.NumberStyles.HexNumber).ToString(); ;

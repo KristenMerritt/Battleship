@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Battleship.Cl;
 using Battleship.Models;
 using Battleship.Repos;
 using Microsoft.AspNetCore.Mvc;
-using Battleship.Helpers;
-using Microsoft.AspNetCore.Http.Features;
 
 namespace Battleship.Controllers
 {
@@ -17,16 +13,22 @@ namespace Battleship.Controllers
     {
         private readonly PlayerRepo _playerRepo; // DB repo class
 
+        /// <summary>
+        /// Controller for the Login table
+        /// </summary>
+        /// <param name="playerRepo"></param>
         public LoginController(PlayerRepo playerRepo) : base(playerRepo)
         {
             _playerRepo = playerRepo;
         }
 
-        // POST: api/Login
-        // Checks whether or not the user/pass combination is correct
-        // If successful, a token will be provided back to the user to use
-        // PARAM: PlayerLoginInfo
-        // RETURN: JsonResult
+        /// <summary>
+        /// Checks whether or not the user/pass combination is correct.
+        /// If successful, a token will be provided back to the user to use.
+        /// POST: api/Login
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns>JsonResult</returns>
         [HttpPost]
         public JsonResult Login(PlayerLoginInfo login)
         {
@@ -35,9 +37,6 @@ namespace Battleship.Controllers
             var userId = -1;
             var handle = "";
             var token = "";
-
-            Console.WriteLine(DateTime.Now.ToString("G") + " -- Login attempt made | Handle: " + login.Handle + " | Password: " + login.Password );
-            Debug.WriteLine(DateTime.Now.ToString("G") + " --Login attempt made | Handle: " + login.Handle + " | Password: " + login.Password);
 
             // Sanitize the handle and password before doing anything
             if (!base.SanitizeHandle(login.Handle))
@@ -67,15 +66,11 @@ namespace Battleship.Controllers
                     // Check the hashed password against the one in the db
                     if (hashedPassword == dbPass)
                     {
-                        Console.WriteLine(DateTime.Now.ToString("G") + " -- Password correct");
-                        Debug.WriteLine(DateTime.Now.ToString("G") + " -- Password correct");
 
                         userId = playerInfo.Player_Id;
                         handle = playerInfo.Handle;
 
                         var userIpAddressString = base.GetRequestIP();
-                        //Console.WriteLine(DateTime.Now.ToString("G") + " -- GetRequestIP() result" +  userIpAddressString);
-                        //Debug.WriteLine(DateTime.Now.ToString("G") + " -- GetRequestIP() result" + userIpAddressString);
 
                         if (String.IsNullOrEmpty(userIpAddressString) || userIpAddressString.Equals(""))
                         {
@@ -86,9 +81,6 @@ namespace Battleship.Controllers
                         {
                             var tokenGenerator = new Token(userId, userIpAddressString);
                             token = tokenGenerator.GenerateToken();
-
-                            Console.WriteLine(DateTime.Now.ToString("G") + " -- Made token: " + token);
-                            Debug.WriteLine(DateTime.Now.ToString("G") + " -- Made token: " + token);
 
                             _playerRepo.SetIpAddress(tokenGenerator.RemoveChars(userIpAddressString), userId); // Set the IP address for the user in the DB to check the token later
                         }                       

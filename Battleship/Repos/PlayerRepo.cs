@@ -14,17 +14,30 @@ namespace Battleship.Repos
     {
 	    private DataContext _context;
 
+        /// <summary>
+        /// Repo for the player table. Communicates directly
+        /// with the database.
+        /// </summary>
+        /// <param name="context"></param>
 	    public PlayerRepo(DataContext context)
 	    {
 		    _context = context;
 	    }
 
+        /// <summary>
+        /// Gets all players in the database.
+        /// </summary>
+        /// <returns>IEnumerable<db_Player></returns>
 	    public IEnumerable<db_Player> GetAllPlayers()
 	    {
 		    return _context.MySqlDb.Query<db_Player>("SELECT * FROM player;",
 			    commandType: CommandType.Text);
 	    }
 
+        /// <summary>
+        /// Adds a new player to the database.
+        /// </summary>
+        /// <param name="player"></param>
         public void AddNewPlayer(db_Player player)
         {
             _context.MySqlDb.Query<Player>(
@@ -32,6 +45,11 @@ namespace Battleship.Repos
                 commandType: CommandType.Text);
         }
 
+        /// <summary>
+        /// Checks to see if a handle exists or not.
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns>bool</returns>
         public bool HandleExists(string handle)
         {
             var player = _context.MySqlDb.Query<db_Player>("SELECT * FROM player WHERE handle = '"+handle+"';",
@@ -40,6 +58,11 @@ namespace Battleship.Repos
             return player.Any();
         }
 
+        /// <summary>
+        /// Gets a user from the handle provided.
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns>db_Player</returns>
         public db_Player GetUserByHandle(string handle)
         {
             var player = _context.MySqlDb.Query<db_Player>(
@@ -49,6 +72,11 @@ namespace Battleship.Repos
             return player;
         }
 
+        /// <summary>
+        /// Gets a player from the id provided.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>db_Player</returns>
         public db_Player GetPlayerById(int id)
         {
             try
@@ -80,6 +108,11 @@ namespace Battleship.Repos
             
         }
 
+        /// <summary>
+        /// Sets the IP address of a player.
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="id"></param>
         public void SetIpAddress(string ip, int id)
         {
             _context.MySqlDb.Query<db_Player>("UPDATE player SET ip='"+ip+"' WHERE player_id="+id+";", commandType: CommandType.Text);

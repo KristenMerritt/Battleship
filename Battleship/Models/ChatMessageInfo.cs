@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Battleship.Models
+﻿namespace Battleship.Models
 {
     public class ChatMessageInfo
     {

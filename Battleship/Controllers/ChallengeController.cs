@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Battleship.Models;
+﻿using Battleship.Models;
 using Battleship.Repos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,13 +12,25 @@ namespace Battleship.Controllers
         private readonly PlayerRepo _playerRepo;
         private readonly GameRepo _gameRepo;
 
+        /// <summary>
+        /// Controller ofr the Challenge table
+        /// </summary>
+        /// <param name="challengeRepo"></param>
+        /// <param name="gameRepo"></param>
+        /// <param name="playerRepo"></param>
         public ChallengeController(ChallengeRepo challengeRepo, GameRepo gameRepo, PlayerRepo playerRepo) : base(playerRepo)
         {
             _challengeRepo = challengeRepo;
             _gameRepo = gameRepo;
         }
 
-        //GET: api/Challenge/5
+        /// <summary>
+        /// Gets a specific challenge.
+        /// GET: api/Challenge/get-challenge/{challengeId}/{token}
+        /// </summary>
+        /// <param name="challengeId"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("get-challenge/{challengeId}/{token}")]
         public JsonResult GetChallenge(int challengeId, string token)
@@ -32,7 +43,14 @@ namespace Battleship.Controllers
             return Json(_challengeRepo.GetChallenge(challengeId));
         }
 
-        //GET: api/Challenge/5
+        /// <summary>
+        /// Gets all of the pending or accepted challenges
+        /// for a particular player.
+        /// GET: api/Challenge/{playerId}/{token}
+        /// </summary>
+        /// <param name="playerId"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("{playerId}/{token}")]
         public JsonResult GetAllPendingOrAcceptedChallenges(int playerId, string token)
@@ -45,7 +63,15 @@ namespace Battleship.Controllers
             return Json(_challengeRepo.GetAllPendingOrAcceptedChallenges(playerId));
         }
 
-        //GET: api/Challenge/getNew/{playerId}/{challengeId}
+        /// <summary>
+        /// Gets all of the recent pending challenges for a 
+        /// particular player.
+        /// GET: api/Challenge/checkNew/{playerId}/{challengeId}/{token}
+        /// </summary>
+        /// <param name="playerId"></param>
+        /// <param name="challengeId"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("checkNew/{playerId}/{challengeId}/{token}")]
         public JsonResult GetAllRecentPendingChallenge(int playerId, int challengeId, string token)
@@ -58,7 +84,15 @@ namespace Battleship.Controllers
             return Json(_challengeRepo.GetAllRecentPendingPlayerChallenges(playerId, challengeId));
         }
 
-        //POST: api/Challenge/1/status
+        /// <summary>
+        /// Sets the status of a particular challenge. If the challenge
+        /// was accepted, make a new game for the two players.
+        /// POST: api/Challenge/set-status/{challengeId}/{status}/{token}
+        /// </summary>
+        /// <param name="challengeId"></param>
+        /// <param name="status"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("set-status/{challengeId}/{status}/{token}")]
         public JsonResult SetStatusOfChallenge(int challengeId, bool status, string token)
@@ -69,10 +103,13 @@ namespace Battleship.Controllers
                 invalidToken = true
             });
 
+            // Sets the status of the challenge
             var updatedChallenge = _challengeRepo.SetStatus(status, challengeId);
 
+            // Check to make sure we actually did update the challenge.
             if (updatedChallenge == null)
             {
+                // If we did not update the challenge, send an error message
                 return Json(new
                 {
                     errMsg = "Challenge status not set - please try again.",
@@ -80,6 +117,7 @@ namespace Battleship.Controllers
                 });
             }
 
+            // Check to see if the challenge was accepted, make a new game
             if (updatedChallenge.Accepted)
             {
                 db_Game game = new db_Game()
@@ -90,10 +128,13 @@ namespace Battleship.Controllers
                     Turn = -1
                 };
 
+                // Make the game
                 var gameCreated = _gameRepo.CreateNewGame(game);
 
+                // Check to make sure the game was created
                 if (gameCreated == null)
                 {
+                    // Return an error if the game was not made
                     return Json(new
                     {
                         errMsg = "Game could not be created. You may already have an active game with this user.",
@@ -103,10 +144,18 @@ namespace Battleship.Controllers
                 } 
             }
 
+            // Return the normal updated challenge if the game was not accepted
             return Json(updatedChallenge);
         }
 
-        //POST: api/Challenge/1/2/token
+        /// <summary>
+        /// Add a new challenge to the DB.
+        /// POST: api/Challenge/new/{player1Id}/{player2Id}/{token}
+        /// </summary>
+        /// <param name="player1Id"></param>
+        /// <param name="player2Id"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpPost]
         [Route("new/{player1Id}/{player2Id}/{token}")]
         public JsonResult AddNewChallenge(int player1Id, int player2Id, string token)

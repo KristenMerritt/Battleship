@@ -10,15 +10,23 @@ namespace Battleship.Controllers
         private readonly PlayerRepo _playerRepo; // DB repo class
         private readonly ShotRepo _shotRepo;
 
+        /// <summary>
+        /// Controller for the Shot table.
+        /// </summary>
+        /// <param name="shotRepo"></param>
+        /// <param name="playerRepo"></param>
         public ShotController(ShotRepo shotRepo, PlayerRepo playerRepo) : base(playerRepo)
         {
             _playerRepo = playerRepo;
             _shotRepo = shotRepo;
         }
 
-        // GET: api/Shot/all-by-board/{boardId}
-        // Gets all shots for a board from the DB
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets all shots for a board from the DB.
+        /// GET: api/Shot/all-by-board/{boardId}
+        /// </summary>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("all-by-board/{boardId}")]
         public JsonResult GetShotsForBoard(int boardId)
@@ -26,10 +34,15 @@ namespace Battleship.Controllers
             return Json(_shotRepo.GetAllShotsForBoard(boardId));
         }
 
-        // GET: api/Shot/new-shot/{shotId}/{boardId}
-        // Gets all shots greater than the shot ID for a 
-        // specific board.
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets all shots greater than the shot ID for a
+        /// specific board.
+        /// GET: api/Shot/new-shots/{shotId}/{board1Id}/{board2Id}
+        /// </summary>
+        /// <param name="shotId"></param>
+        /// <param name="board1Id"></param>
+        /// <param name="board2Id"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("new-shots/{shotId}/{board1Id}/{board2Id}")]
         public JsonResult GetNewShotsForBoard(int shotId, int board1Id, int board2Id)

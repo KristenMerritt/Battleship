@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Battleship.Models
 {
@@ -23,11 +18,6 @@ namespace Battleship.Models
         {
 
         }
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseMySQL();
-        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

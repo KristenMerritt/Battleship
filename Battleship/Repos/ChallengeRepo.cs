@@ -14,11 +14,21 @@ namespace Battleship.Repos
     {
         private readonly DataContext _context;
 
+        /// <summary>
+        /// Repo for the challenge table. Directly communicates
+        /// with the database.
+        /// </summary>
+        /// <param name="context"></param>
         public ChallengeRepo(DataContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Gets a specific challenge from the DB.
+        /// </summary>
+        /// <param name="challengeId"></param>
+        /// <returns>db_Challenge</returns>
         public db_Challenge GetChallenge(int challengeId)
         {
             try
@@ -47,8 +57,12 @@ namespace Battleship.Repos
             }
         }
 
-        // Retreives all of the pending challenges for a certain player
-        // RETURN: IEnumerable<db_Challenge> 
+        /// <summary>
+        /// Gets all of the pending or accepted challenges
+        /// of a particular player from the database.
+        /// </summary>
+        /// <param name="playerId"></param>
+        /// <returns>IEnumerable<db_Challenge></returns>
         public IEnumerable<db_Challenge> GetAllPendingOrAcceptedChallenges(int playerId)
         {
             try
@@ -79,8 +93,12 @@ namespace Battleship.Repos
             }
         }
 
-        // Retreives all of the pending challenges for a certain player after a certain id
-        // RETURN: IEnumerable<db_Challenge> 
+        /// <summary>
+        /// Retreives all of the pending challenges for a certain player after a certain id
+        /// </summary>
+        /// <param name="playerId"></param>
+        /// <param name="challengeId"></param>
+        /// <returns>IEnumerable<db_Challenge></returns>
         public IEnumerable<db_Challenge> GetAllRecentPendingPlayerChallenges(int playerId, int challengeId)
         {
             try
@@ -112,8 +130,11 @@ namespace Battleship.Repos
             }
         }
 
-        // Inserts a new challenge into the challenge database
-        // RETURN: bool
+        /// <summary>
+        /// Inserts a new challenge into the challenge database.
+        /// </summary>
+        /// <param name="challenge"></param>
+        /// <returns>bool</returns>
         public bool AddNewChallenge(db_Challenge challenge)
         {
             try
@@ -143,9 +164,13 @@ namespace Battleship.Repos
                 return false;
             }           
         }
-
-        // Sets the status of a challenge in the challenge database
-        // RETURN: bool
+ 
+        /// <summary>
+        /// Sets the status of a particular challenge in the database.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="challengeId"></param>
+        /// <returns>bool</returns>
         public db_Challenge SetStatus(bool status, int challengeId)
         {
             try

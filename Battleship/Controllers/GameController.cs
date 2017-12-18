@@ -11,15 +11,25 @@ namespace Battleship.Controllers
         private readonly PlayerRepo _playerRepo; // DB repo class
         private readonly GameRepo _gameRepo;
 
+        /// <summary>
+        /// Controller for the Game table
+        /// </summary>
+        /// <param name="gameRepo"></param>
+        /// <param name="boardRepo"></param>
+        /// <param name="playerRepo"></param>
         public GameController(GameRepo gameRepo, BoardRepo boardRepo, PlayerRepo playerRepo) : base(playerRepo)
         {
             _playerRepo = playerRepo;
             _gameRepo = gameRepo;
         }
 
-        // GET: api/Game/{gameId}/{token}
-        // Gets a game from the DB
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets a game from the DB.
+        /// GET: api/Game/{gameId}/{token}
+        /// </summary>
+        /// <param name="gameId"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("{gameId}/{token}")]
         public JsonResult GetGame(int gameId, string token)
@@ -45,9 +55,14 @@ namespace Battleship.Controllers
             return Json(game);
         }
 
-        // GET: api/Game/{player1Id}/{player2Id}
-        // Gets a game from the DB
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets a game from the DB by the players involved.
+        /// GET: api/Game/{player1Id}/{player2Id}/{token}
+        /// </summary>
+        /// <param name="player1Id"></param>
+        /// <param name="player2Id"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("{player1Id}/{player2Id}/{token}")]
         public JsonResult GetActiveGameByPlayers(int player1Id, int player2Id, string token)
@@ -73,11 +88,13 @@ namespace Battleship.Controllers
             return Json(game);
         }
 
-        // GET: api/Game/{playerId}/{token}
-        // Retreives all active games for a player
-        // PARAM: int playerId
-        // PARAM: string token
-        // RETURN: JsonResult
+        /// <summary>
+        /// Retreives all active games for a player.
+        /// GET: api/Game/{playerId}/{token}
+        /// </summary>
+        /// <param name="playerId"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{playerId}/{token}")]
         public JsonResult GetAllActiveGamesForPlayer(int playerId, string token)
@@ -102,13 +119,15 @@ namespace Battleship.Controllers
             return Json(games);
         }
 
-        // POST: api/Game/{player1Id}/{player2Id}/{token}
-        // Creates a new game based off of player Ids provided
-        // Will also create the two player boards
-        // PARAM: int player1Id
-        // PARAM: int player2Id
-        // PARAM: string token
-        // RETURN: JsonResult
+        /// <summary>
+        /// Creates a new game based off of player Ids provided.
+        /// Will also create the two player boards.
+        /// POST: api/Game/{player1Id}/{player2Id}/{token}
+        /// </summary>
+        /// <param name="player1Id"></param>
+        /// <param name="player2Id"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpPost]
         [Route("{player1Id}/{player2Id}/{token}")]
         public JsonResult CreateGame(int player1Id, int player2Id, string token)
@@ -144,12 +163,14 @@ namespace Battleship.Controllers
             return Json(createdGame); 
         }
 
-        // POST: api/Game/set-game-status/{gameId}/{status}/{token}
-        // Sets the status of a game
-        // PARAM: int gameId
-        // PARAM: bool status
-        // PARAM: string token
-        // RETURN: JsonResult
+        /// <summary>
+        /// Sets the status of a game.
+        /// POST: api/Game/set-game-status/{gameId}/{status}/{token}
+        /// </summary>
+        /// <param name="gameId"></param>
+        /// <param name="status"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpPost]
         [Route("set-game-status/{gameId}/{status}/{token}")]
         public JsonResult SetGameStatus(int gameId, bool status, string token)
@@ -170,6 +191,13 @@ namespace Battleship.Controllers
             });
         }
 
+        /// <summary>
+        /// Starts a game over by deleteing shots and ship locations.
+        /// POST: api/Game/start-over/{gameId}/{token}
+        /// </summary>
+        /// <param name="gameId"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpPost]
         [Route("start-over/{gameId}/{token}")]
         public JsonResult StartGameOver(int gameId, string token)
@@ -186,15 +214,13 @@ namespace Battleship.Controllers
             {
                 return Json(true);
             }
-            else
+
+            return Json(new
             {
-                return Json(new
-                {
-                    errMsg = "Error restarting game. Please try again.",
-                    err = "Failure to restart game.",
-                    invalidToken = false
-                });
-            }
+                errMsg = "Error restarting game. Please try again.",
+                err = "Failure to restart game.",
+                invalidToken = false
+            });
         }
     }
 }

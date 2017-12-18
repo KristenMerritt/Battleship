@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Battleship.Repos;
-using Microsoft.AspNetCore.Http;
+﻿using Battleship.Repos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Battleship.Controllers
@@ -15,15 +10,24 @@ namespace Battleship.Controllers
         private readonly PlayerRepo _playerRepo; // DB repo class
         private readonly BoardRepo _boardRepo;
 
+        /// <summary>
+        /// Controller for Board table
+        /// </summary>
+        /// <param name="boardRepo"></param>
+        /// <param name="playerRepo"></param>
         public BoardController(BoardRepo boardRepo, PlayerRepo playerRepo) : base(playerRepo)
         {
             _playerRepo = playerRepo;
             _boardRepo = boardRepo;
         }
 
-        // GET: api/Game/{gameId}/{token}
-        // Gets a game from the DB
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets a specific board from the DB.
+        /// GET: api/Game/{gameId}/{token}
+        /// </summary>
+        /// <param name="boardId"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("{boardId}/{token}")]
         public JsonResult GetBoard(int boardId, string token)

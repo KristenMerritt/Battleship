@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using Battleship.Models;
 using Battleship.Repos;
 using Microsoft.AspNetCore.Mvc;
@@ -13,25 +11,32 @@ namespace Battleship.Controllers
     {
         private readonly PlayerRepo _playerRepo; // DB repo class
 
+        /// <summary>
+        /// Controller for the Player table
+        /// </summary>
+        /// <param name="playerRepo"></param>
         public PlayerController(PlayerRepo playerRepo) : base(playerRepo)
         {
             _playerRepo = playerRepo;
         }
 
-        // GET: api/Player
-        // Gets all players from the DB
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets all players from the DB
+        /// GET: api/Player
+        /// </summary>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         public JsonResult GetAllPlayers()
         {
             return Json(_playerRepo.GetAllPlayers());
 ;        }
 
-        // GET: api/Player/1/token
-        // Gets a player by their ID
-        // PARAM: int id
-        // PARAM: string token
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets a player by their ID.
+        /// GET: api/Player/by-id/{id}
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("by-id/{id}")]
         public JsonResult GetPlayerById(int id)
@@ -39,10 +44,12 @@ namespace Battleship.Controllers
             return Json(base.GetUser(id));
         }
 
-        // GET: api/Player/token
-        // Gets a player by the token provided
-        // PARAM: string token
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets a player by the token provided.
+        /// GET: api/Player/by-token/{token}
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("by-token/{token}")]
         public JsonResult GetPlayerByToken(string token)
@@ -58,11 +65,13 @@ namespace Battleship.Controllers
             return Json(_playerRepo.GetPlayerById(id));
         }
 
-        // GET: api/Player/handle/token
-        // Gets a player based off of handle
-        // PARAM: string handle
-        // PARAM: string token
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets a player based off of handle.
+        /// GET: api/Player/{handle}/{token}
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <param name="token"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("by-handle/{handle}/{token}")]
         public JsonResult GetPlayerByHandle(string handle, string token)
@@ -77,10 +86,12 @@ namespace Battleship.Controllers
             return Json(base.GetUserByHandle(handle));
         }
 
-        // POST: api/Player
-        // Creates a new player in the database with provided information
-        // PARAM: db_player playerInfo
-        // RETURN: JsonResult
+        /// <summary>
+        /// Creates a new player in the database with provided information.
+        /// POST: api/Player
+        /// </summary>
+        /// <param name="playerInfo"></param>
+        /// <returns>JsonResult</returns>
         [HttpPost]
         public JsonResult CreatePlayer(db_Player playerInfo)
         {

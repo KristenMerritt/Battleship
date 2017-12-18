@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Battleship.Models;
+﻿using Battleship.Models;
 using Battleship.Repos;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Battleship.Controllers
@@ -16,15 +11,23 @@ namespace Battleship.Controllers
         private readonly PlayerRepo _playerRepo; // DB repo class
         private readonly ShipRepo _shipRepo;
 
+        /// <summary>
+        /// Controller for the Ship table
+        /// </summary>
+        /// <param name="shipRepo"></param>
+        /// <param name="playerRepo"></param>
         public ShipController(ShipRepo shipRepo, PlayerRepo playerRepo) : base(playerRepo)
         {
             _playerRepo = playerRepo;
             _shipRepo = shipRepo;
         }
 
-        // GET: api/Ship/{shipId}
-        // Gets a ship from the DB
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets a specific ship.
+        /// GET: api/Ship/{shipId}
+        /// </summary>
+        /// <param name="shipId"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("ship/{shipId}")]
         public JsonResult GetShip(int shipId)
@@ -32,9 +35,12 @@ namespace Battleship.Controllers
             return Json(_shipRepo.GetShip(shipId));
         }
 
-        // GET: api/Ship/all-by-board/{boardId}
-        // Gets all ships for a board from the DB
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets all of the ships for a specific board.
+        /// GET: api/Ship/all-by-board/{boardId}
+        /// </summary>
+        /// <param name="boardId"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("all-by-board/{boardId}")]
         public JsonResult GetShipsForBoard(int boardId)
@@ -42,9 +48,12 @@ namespace Battleship.Controllers
             return Json(_shipRepo.GetAllShipsForBoard(boardId));
         }
 
-        // POST: api/Ship/starter/{boardId}
-        // Makes new ships for a new game board
-        // RETURN: JsonResult
+        /// <summary>
+        /// Makes new ships for a new game board.
+        /// POST: api/Ship/starter/{boardId}
+        /// </summary>
+        /// <param name="boardId"></param>
+        /// <returns>bool</returns>
         [HttpPost]
         [Route("starter/{boardId}")]
         public bool MakeStartingShips(int boardId)

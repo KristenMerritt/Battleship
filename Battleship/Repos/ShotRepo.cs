@@ -7,7 +7,6 @@ using System.Linq;
 using Battleship.Config;
 using Battleship.Models;
 using Dapper;
-using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 
 namespace Battleship.Repos
@@ -16,24 +15,34 @@ namespace Battleship.Repos
     {
         private readonly DataContext _context;
 
+        /// <summary>
+        /// Repo for the shot table. Communicates
+        /// directly with the database.
+        /// </summary>
+        /// <param name="context"></param>
         public ShotRepo(DataContext context)
         {
             _context = context;
         }
 
-        // Returns all of the shots for a specific board
-        // PARAM: int boardId
-        // RETURN: IEnumerable<db_Shot>
+        /// <summary>
+        /// Returns all of the shots for a specific board
+        /// </summary>
+        /// <param name="boardId"></param>
+        /// <returns>IEnumerable<db_Shot></returns>
         public IEnumerable<db_Shot> GetAllShotsForBoard(int boardId)
         {
             return _context.MySqlDb.Query<db_Shot>("SELECT * FROM shot WHERE board_id = " + boardId + ";",
                 commandType: CommandType.Text);
         }
 
-        // Returns all of the new shots for a specific board
-        // PARAM: int boardId
-        // PARAM: int shotId
-        // RETURN: IEnumerable<db_Shot>
+        /// <summary>
+        /// Returns all of the new shots for a specific board
+        /// </summary>
+        /// <param name="shotId"></param>
+        /// <param name="board1Id"></param>
+        /// <param name="board2Id"></param>
+        /// <returns>IEnumerable<db_Shot></returns>
         public IEnumerable<db_Shot> GetNewShotsForBoard(int shotId, int board1Id, int board2Id)
         {
             return _context.MySqlDb.Query<db_Shot>("SELECT * FROM shot WHERE shot_id > " + shotId + " " +
@@ -41,19 +50,23 @@ namespace Battleship.Repos
                 commandType: CommandType.Text);
         }
 
-        // Returns all of the shots for a specific board where there was a hit
-        // PARAM: int boardId
-        // RETURN: IEnumerable<db_Shot>
+        /// <summary>
+        /// Returns all of the shots for a specific board where there was a hit.
+        /// </summary>
+        /// <param name="boardId"></param>
+        /// <returns>IEnumerable<db_Shot></returns>
         public IEnumerable<db_Shot> GetAllHitsForBoard(int boardId)
         {
             return _context.MySqlDb.Query<db_Shot>("SELECT * FROM shot WHERE (board_id = " + boardId + ") AND (is_hit = 1);",
                 commandType: CommandType.Text);
         }
 
-        // Creates a new shot in the DB.
-        // Switches whos turn it is in the DB.
-        // PARAM: db_Shot
-        // RETURN: bool
+        /// <summary>
+        /// Creates a new shot in the DB.
+        /// Switches whos turn it is in the DB.
+        /// </summary>
+        /// <param name="shot"></param>
+        /// <returns>ArrayList</returns>
         public ArrayList CreateNewShot(db_Shot shot)
         {
             try
@@ -85,6 +98,7 @@ namespace Battleship.Repos
                     var shipLocationsForBoard = _context.MySqlDb.Query<db_ShipLocation>("SELECT * FROM ship_location WHERE board_id = " + shot.Board_Id + ";",
                                         commandType: CommandType.Text);
 
+                    // Checking for the win condition
                     if (hitsForBoard.Count() == shipLocationsForBoard.Count())
                     {
                         var validWin = false;

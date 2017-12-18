@@ -9,14 +9,20 @@ namespace Battleship.Controllers
     {
         private readonly ShipTypeRepo _shipTypeRepo;
 
+        /// <summary>
+        /// Controller for the ShipType table.
+        /// </summary>
+        /// <param name="shipTypeRepo"></param>
         public ShipTypeController(ShipTypeRepo shipTypeRepo)
         {
             _shipTypeRepo = shipTypeRepo;
         }
 
-        // GET: api/ShipType/{shipTypeId}
-        // Gets a ship type from the DB
-        // RETURN: JsonResult
+        /// <summary>
+        /// Gets a specific ship type from the DB.
+        /// </summary>
+        /// <param name="shipTypeId"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("{shipTypeId}")]
         public JsonResult GetShipType(int shipTypeId)

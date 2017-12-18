@@ -1,0 +1,79 @@
+﻿[
+  {
+    "outputFileName": "wwwroot/assets/css/site.min.css",
+    "inputFiles": [
+      "Content/bootstrap.css",
+      "Content/default.css",
+      "Content/chat.css",
+      "Content/challenges.css",
+      "Content/login.css",
+      "Content/game.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/site.min.js",
+    "inputFiles": [
+      "Scripts/popper.js",
+      "Scripts/shared.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/home.min.js",
+    "inputFiles": [
+      "Scripts/chat.js",
+      "Scripts/challenge.js",
+      "Scripts/newGameCreation.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/login.min.js",
+    "inputFiles": [
+      "Scripts/login.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/createAccount.min.js",
+    "inputFiles": [
+      "Scripts/createAccount.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/assets/js/game.min.js",
+    "inputFiles": [
+      "Scripts/game/basicGameComponents.js",
+      "Scripts/game/ships.js",
+      "Scripts/game/gameFunctions.js",
+      "Scripts/game/initialLoad.js",
+      "Scripts/game/util.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  }
+]

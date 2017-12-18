@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Battleship.Config;
 using Battleship.Models;
 using Dapper;
@@ -20,55 +19,44 @@ namespace Battleship.Repos
             _context = context;
         }
 
-        // Returns all of the data points for all ships in a specific board
-        // PARAM: int boardId
-        // RETURN: IEnumerable<db_ShipLocation>
+        /// <summary>
+        /// Returns all of the data points for all ships in a specific board.
+        /// </summary>
+        /// <param name="boardId"></param>
+        /// <returns>IEnumerable<db_ShipLocation></returns>
         public IEnumerable<db_ShipLocation> GetAllShipLocationsForBoard(int boardId)
         {
             return _context.MySqlDb.Query<db_ShipLocation>("SELECT * FROM ship_location WHERE board_id = " + boardId + ";",
                 commandType: CommandType.Text);
         }
 
-        // Returns all of the location data points for a specific ship
-        // PARAM: int shipId
-        // RETURN: IEnumerable<db_ShipLocation>
+        /// <summary>
+        /// Returns all of the location data points for a specific ship
+        /// </summary>
+        /// <param name="shipId"></param>
+        /// <returns>IEnumerable<db_ShipLocation></returns>
         public IEnumerable<db_ShipLocation> GetShipLocation(int shipId)
         {
             return _context.MySqlDb.Query<db_ShipLocation>("SELECT * FROM ship_location WHERE ship_id = " + shipId + ";",
                 commandType: CommandType.Text);
         }
 
-        // Returns true if hit, false if miss
-        // PARAM: int row
-        // PARAM: int col
-        // RETURN: boolean
+        /// <summary>
+        /// Checks a location to see if a ship is there or not.
+        /// </summary>
+        /// <param name="shipLocation"></param>
+        /// <returns>db_ShipLocation</returns>
         public db_ShipLocation CheckLocation(db_ShipLocation shipLocation)
         {
             return _context.MySqlDb.Query<db_ShipLocation>("SELECT * FROM ship_location WHERE board_id = " + shipLocation.Board_Id + " AND row = " + shipLocation.Row + " AND col = " + shipLocation.Col + ";",
                 commandType: CommandType.Text).FirstOrDefault();
         }
 
-        // Returns all of the data points for all ships in a specific row
-        // PARAM: int row
-        // RETURN: IEnumerable<db_ShipLocation>
-        public IEnumerable<db_ShipLocation> GetAllShipLocationsInRow(int row)
-        {
-            return _context.MySqlDb.Query<db_ShipLocation>("SELECT * FROM ship_location WHERE row = " + row + ";",
-                commandType: CommandType.Text);
-        }
-
-        // Returns all of the data points for all ships in a specific col
-        // PARAM: int col
-        // RETURN: IEnumerable<db_ShipLocation>
-        public IEnumerable<db_ShipLocation> GetAllShipLocationsInCol(int col)
-        {
-            return _context.MySqlDb.Query<db_ShipLocation>("SELECT * FROM ship_location WHERE col = " + col + ";",
-                commandType: CommandType.Text);
-        }
-
-        // Inserts a data point for a ship
-        // PARAM: db_ShipLocation
-        // RETURN: bool
+        /// <summary>
+        /// Inserts a data point for a ship.
+        /// </summary>
+        /// <param name="shipLocation"></param>
+        /// <returns>bool</returns>
         public bool CreateNewShipLocation(db_ShipLocation shipLocation)
         {
             try
@@ -97,9 +85,11 @@ namespace Battleship.Repos
             }
         }
 
-        // Update a data point for a ship
-        // PARAM: db_ShipLocation
-        // RETURN: bool
+        /// <summary>
+        /// Updates a data point for a ship
+        /// </summary>
+        /// <param name="shipLocation"></param>
+        /// <returns>bool</returns>
         public bool UpdateShipLocation(db_ShipLocation shipLocation)
         {
             try

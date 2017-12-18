@@ -13,19 +13,33 @@ namespace Battleship.Controllers
         private readonly ChatRepo _chatRepo;
         private readonly PlayerRepo _playerRepo;
 
+        /// <summary>
+        /// Controller for the Chat table
+        /// </summary>
+        /// <param name="chatRepo"></param>
+        /// <param name="playerRepo"></param>
         public ChatController(ChatRepo chatRepo, PlayerRepo playerRepo) : base(playerRepo)
         {
             _chatRepo = chatRepo;
         }
 
-        //GET: api/Chat
+        /// <summary>
+        /// Gets all of the chat from the DB.
+        /// GET: api/Chat
+        /// </summary>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         public JsonResult GetAllChat()
         {
             return Json(_chatRepo.GetAllChat());
         }
 
-        //GET: api/Chat/5
+        /// <summary>
+        /// Gets all of the chat after a certain ID.
+        /// GET: api/Chat/{chatId}
+        /// </summary>
+        /// <param name="chatId"></param>
+        /// <returns>JsonResult</returns>
         [HttpGet]
         [Route("{chatId}")]
         public JsonResult GetRecentChat(int chatId)
@@ -33,7 +47,11 @@ namespace Battleship.Controllers
             return Json(_chatRepo.GetRecentChat(chatId));
         }
 
-        //POST: api/Chat
+        /// <summary>
+        /// Adds a new chat to the DB.
+        /// POST: api/Chat
+        /// </summary>
+        /// <param name="input"></param>
         [HttpPost]
         public void AddNewChat(ChatMessageInfo input)
         {
@@ -48,6 +66,5 @@ namespace Battleship.Controllers
             };
             _chatRepo.AddNewChat(chat);
         }
-
     }
 }

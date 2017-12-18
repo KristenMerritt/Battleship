@@ -14,29 +14,43 @@ namespace Battleship.Repos
     {
         private readonly DataContext _context;
 
+        /// <summary>
+        /// repo for the Ship table. Communicates directly
+        /// with the database.
+        /// </summary>
+        /// <param name="context"></param>
         public ShipRepo(DataContext context)
         {
             _context = context;
         }
 
-        // Retreives all of the ships for a certain board
-        // RETURN: IEnumerable<db_Ship>
+        /// <summary>
+        /// Retreives all of the ships for a certain board.
+        /// </summary>
+        /// <param name="boardId"></param>
+        /// <returns>IEnumerable<db_Ship></returns>
         public IEnumerable<db_Ship> GetAllShipsForBoard(int boardId)
         {
             return _context.MySqlDb.Query<db_Ship>("SELECT * FROM ship WHERE board_id = " + boardId + ";",
                 commandType: CommandType.Text);
         }
 
-        // Retreives a specific ship
-        // RETURN: db_Ship
+        /// <summary>
+        /// Gets a specific ship from the db.
+        /// </summary>
+        /// <param name="shipId"></param>
+        /// <returns>db_Ship</returns>
         public db_Ship GetShip(int shipId)
         {
             return _context.MySqlDb.Query<db_Ship>("SELECT * FROM ship WHERE ship_id = " + shipId + ";",
                 commandType: CommandType.Text).FirstOrDefault();
         }
 
-        // Creates a new ship
-        // RETURN: bool
+        /// <summary>
+        /// Creates a new ship in the DB.
+        /// </summary>
+        /// <param name="ship"></param>
+        /// <returns>bool</returns>
         public bool CreateShip(db_Ship ship)
         {
             try
@@ -65,8 +79,12 @@ namespace Battleship.Repos
             }
         }
 
-        // Sets the placement status of a specific ship in the database
-        // RETURN: bool
+        /// <summary>
+        /// Sets the placement status of a specific ship in the database
+        /// </summary>
+        /// <param name="shipId"></param>
+        /// <param name="status"></param>
+        /// <returns>bool</returns>
         public bool SetPlacementStatus(int shipId, bool status)
         {
             try

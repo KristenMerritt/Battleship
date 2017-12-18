@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Battleship.Config;
 using Battleship.Models;
 using Dapper;
@@ -15,13 +14,19 @@ namespace Battleship.Repos
     {
         private readonly DataContext _context;
 
+        /// <summary>
+        /// Repo for the chat table. Communicates directly with the database.
+        /// </summary>
+        /// <param name="context"></param>
         public ChatRepo(DataContext context)
         {
             _context = context;
         }
-
-        // Retreives all of the chat in the database
-        // RETURN: IEnumerable<db_Chat> 
+ 
+        /// <summary>
+        /// Retreives all of the chat in the database.
+        /// </summary>
+        /// <returns>IEnumerable<db_Chat></returns>
         public IEnumerable<db_Chat> GetAllChat()
         {
             try
@@ -49,7 +54,10 @@ namespace Battleship.Repos
             }          
         }
 
-        // Adds a new chat object into the database
+        /// <summary>
+        /// Adds a new chat object into the database
+        /// </summary>
+        /// <param name="chat"></param>
         public void AddNewChat(db_Chat chat)
         {
             Debug.WriteLine("ADDING: " + chat.Player_Id);
@@ -58,8 +66,11 @@ namespace Battleship.Repos
                 commandType: CommandType.Text);
         }
 
-        // Retreives all of the chat after a certain ID
-        // RETURN: IEnumerable<db_Chat> 
+        /// <summary>
+        /// Retreives all of the chat after a certain ID
+        /// </summary>
+        /// <param name="chatId"></param>
+        /// <returns>IEnumerable<db_Chat></returns>
         public IEnumerable<db_Chat> GetRecentChat(int chatId)
         {
             try
